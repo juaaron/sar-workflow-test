@@ -2406,6 +2406,139 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- CONNECTED USERS QUERY TAB -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <div id="connectedusers-tab" class="tab-content">
+            <div class="page-title">🔗 Connected Users Query <span class="title-sub">Network Activity & Connection Analysis</span></div>
+
+            <div class="alert-banner">
+                <span>ℹ️</span>
+                <div>
+                    <span class="alert-title">Connected Users Query Builder</span>
+                    <div class="alert-sub">Enter customer tokens and a date range to generate the full Connected Users query. This query finds first-degree hard connections (SSN, bank account, payment card, email, Cash for Teens) and pulls transfers, P2P movements, BTC withdrawals, chargebacks, and SAR case data for the entire network.</div>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <div class="card" style="margin-top:16px;">
+                <div class="card-header">Query Parameters</div>
+                <div style="padding:16px;">
+                    <!-- Tokens Input -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">
+                            Customer Tokens <span style="font-weight:400;text-transform:none;">(one per line, or comma-separated)</span>
+                        </label>
+                        <textarea id="cuTokensInput" rows="5" placeholder="C_8mc9xgyqy&#10;C_abc123def&#10;C_xyz789ghi" style="width:100%;padding:10px 12px;font-size:12px;font-family:'SF Mono',Monaco,Consolas,monospace;border:1px solid var(--border);border-radius:6px;resize:vertical;line-height:1.6;background:var(--bg-light);color:var(--text-primary);"></textarea>
+                        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Enter tokens like <code>C_8mc9xgyqy</code>. Supports comma-separated, space-separated, or one per line.</div>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div style="display:flex;gap:16px;margin-bottom:20px;">
+                        <div style="flex:1;">
+                            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Start Date</label>
+                            <input type="date" id="cuStartDate" style="width:100%;padding:8px 12px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-light);color:var(--text-primary);" />
+                        </div>
+                        <div style="flex:1;">
+                            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">End Date</label>
+                            <input type="date" id="cuEndDate" style="width:100%;padding:8px 12px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-light);color:var(--text-primary);" />
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button class="btn" onclick="buildConnectedUsersQuery()" style="padding:10px 24px;font-size:12px;font-weight:600;">
+                            🔍 Build Query
+                        </button>
+                        <button class="btn" onclick="copyConnectedUsersQuery()" style="padding:10px 24px;font-size:12px;background:var(--bg-light);color:var(--text-primary);border:1px solid var(--border);">
+                            📋 Copy to Clipboard
+                        </button>
+                        <button class="btn" onclick="clearConnectedUsersForm()" style="padding:10px 24px;font-size:12px;background:var(--bg-light);color:var(--text-muted);border:1px solid var(--border);">
+                            🗑️ Clear
+                        </button>
+                        <div id="cuStatus" style="font-size:11px;color:var(--text-muted);margin-left:8px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Query Preview -->
+            <div class="card" style="margin-top:16px;">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Generated SQL Query</span>
+                    <span id="cuStmtCount" style="font-size:10px;color:var(--text-muted);"></span>
+                </div>
+                <div style="padding:16px;">
+                    <pre id="cuQueryPreview" style="background:var(--bg-dark);color:var(--text-primary);padding:16px;border-radius:6px;font-size:11px;font-family:'SF Mono',Monaco,Consolas,monospace;overflow-x:auto;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;line-height:1.5;border:1px solid var(--border);">Enter tokens and date range above, then click "Build Query" to generate the SQL.</pre>
+                </div>
+            </div>
+
+            <!-- Results Table (shown after execution) -->
+            <div id="cuResultsSection" class="card" style="margin-top:16px;display:none;">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Query Results</span>
+                    <div style="display:flex;gap:8px;">
+                        <span id="cuRowCount" style="font-size:10px;color:var(--text-muted);"></span>
+                        <button class="btn" onclick="exportConnectedUsersCSV()" style="font-size:9px;padding:3px 8px;">Export CSV</button>
+                    </div>
+                </div>
+                <div style="padding:16px;overflow-x:auto;">
+                    <table class="data-table" id="cuResultsTable">
+                        <thead id="cuResultsHead"></thead>
+                        <tbody id="cuResultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Query Info -->
+            <div class="card" style="margin-top:16px;">
+                <div class="card-header">What This Query Does</div>
+                <div style="padding:16px;font-size:11px;line-height:1.7;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">🔗 Step 1: Token Lookup</div>
+                            <div style="color:var(--text-muted);">Resolves input tokens to active_customer_id via <code>app_compliance.cash.customers</code></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">👥 Step 2: Connected Users</div>
+                            <div style="color:var(--text-muted);">Finds 1st-degree connections via SSN, bank account, payment card, email, and Cash for Teens sponsorship</div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">💰 Step 3: Transfers</div>
+                            <div style="color:var(--text-muted);">Pulls cash-in counts (successful & failed) from <code>transfers</code> and <code>cash_ins</code> tables</div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">📤 Step 4: P2P Movements</div>
+                            <div style="color:var(--text-muted);">Aggregates sent/received counts, unique counterparties from <code>movements</code> and <code>p2p_transactions</code></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">₿ Step 5: BTC Withdrawals</div>
+                            <div style="color:var(--text-muted);">Counts Bitcoin withdrawal transactions for each connected user</div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">⚠️ Step 6: Chargebacks</div>
+                            <div style="color:var(--text-muted);">Sums chargeback amounts from <code>chargebacks</code> table</div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">📋 Step 7: SAR Cases</div>
+                            <div style="color:var(--text-muted);">Lists open and closed SAR case tokens from <code>app_sar.sargent.cases</code></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;margin-bottom:6px;">📊 Step 8: Final Aggregation</div>
+                            <div style="color:var(--text-muted);">Joins all data into a single output with connection types, degrees, and activity metrics</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-banner" style="background:var(--bg-card);border-color:var(--border);margin-top:12px;">
+                <span>⚖️</span>
+                <div>
+                    <span class="alert-title">Compliance Notice</span>
+                    <div class="alert-sub">This query accesses sensitive customer data. Ensure you have proper authorization and a valid business justification before executing. All queries are logged and auditable.</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ── RIGHT SIDEBAR ── -->
@@ -2486,6 +2619,19 @@
                 <li data-tab="history" onclick="switchTab('history', this)">
                     History
                     <span class="nav-badge" style="background:#333;color:#666;">v2</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- CONNECTED USERS -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                Connected Users <span class="chevron">▼</span>
+            </div>
+            <ul class="sidebar-nav">
+                <li data-tab="connectedusers" onclick="switchTab('connectedusers', this)">
+                    🔗 Query Builder
+                    <span class="nav-badge" style="background:#0066ff;color:#fff;">NEW</span>
                 </li>
             </ul>
         </div>
@@ -5841,6 +5987,365 @@
     }
 
     // ── INIT ──
+    // ══════════════════════════════════════════════════
+    // CONNECTED USERS QUERY BUILDER
+    // ══════════════════════════════════════════════════
+
+    let cuGeneratedQuery = '';
+    let cuResultsData = [];
+
+    function parseTokensInput(raw) {
+        // Split by newlines, commas, spaces, or semicolons
+        return raw.split(/[\n,;\s]+/)
+            .map(t => t.trim().replace(/^['"]|['"]$/g, ''))
+            .filter(t => t.length > 0);
+    }
+
+    async function buildConnectedUsersQuery() {
+        const rawTokens = document.getElementById('cuTokensInput').value;
+        const startDate = document.getElementById('cuStartDate').value;
+        const endDate = document.getElementById('cuEndDate').value;
+        const statusEl = document.getElementById('cuStatus');
+
+        // Validate
+        const tokens = parseTokensInput(rawTokens);
+        if (tokens.length === 0) {
+            statusEl.innerHTML = '<span style="color:#e74c3c;">⚠️ Enter at least one token</span>';
+            return;
+        }
+        if (!startDate || !endDate) {
+            statusEl.innerHTML = '<span style="color:#e74c3c;">⚠️ Both dates are required</span>';
+            return;
+        }
+        if (startDate > endDate) {
+            statusEl.innerHTML = '<span style="color:#e74c3c;">⚠️ Start date must be before end date</span>';
+            return;
+        }
+
+        statusEl.innerHTML = '<span style="color:var(--text-muted);">⏳ Building query...</span>';
+
+        try {
+            const response = await fetch('/connected-users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tokens: tokens,
+                    start_date: startDate,
+                    end_date: endDate
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                statusEl.innerHTML = `<span style="color:#e74c3c;">❌ ${data.error || 'Server error'}</span>`;
+                return;
+            }
+
+            cuGeneratedQuery = data.query;
+            document.getElementById('cuQueryPreview').textContent = data.query;
+            document.getElementById('cuStmtCount').textContent = `${data.statements.length} SQL statements`;
+            statusEl.innerHTML = `<span style="color:#27ae60;">✅ Query built — ${tokens.length} token(s), ${data.statements.length} statements</span>`;
+
+        } catch (err) {
+            // If server is not running, build the query client-side
+            cuGeneratedQuery = buildQueryClientSide(tokens, startDate, endDate);
+            document.getElementById('cuQueryPreview').textContent = cuGeneratedQuery;
+            document.getElementById('cuStmtCount').textContent = 'Built locally (server not running)';
+            statusEl.innerHTML = `<span style="color:#f39c12;">⚠️ Server not reachable — query built locally. Copy and run in Snowflake.</span>`;
+        }
+    }
+
+    function buildQueryClientSide(tokens, startDate, endDate) {
+        const tokensList = tokens.map(t => `'${t}'`).join(', ');
+        return `USE WAREHOUSE COMPLIANCE;
+USE DATABASE PERSONAL_AJU;
+USE SCHEMA PUBLIC;
+
+SET START_DATE = '${startDate}';
+SET END_DATE = '${endDate}';
+
+/************************************/
+
+CREATE OR REPLACE TEMP TABLE token_list AS
+SELECT DISTINCT 
+    fc.token
+  , fc.active_customer_id
+FROM app_compliance.cash.customers fc
+WHERE
+  fc.token IN (${tokensList})
+;
+
+CREATE OR REPLACE TEMP TABLE conn_users as
+SELECT
+  cu.active_customer_id
+  , connected_active_customer_id
+  , connection_type
+  , connected_user_type
+  , 1 AS connection_degree
+FROM app_compliance.cash.cash_connected_users AS cu
+JOIN token_list AS t
+  ON t.active_customer_id = cu.active_customer_id
+WHERE
+  connection_type IN ('PAYMENT_CARD','SSN','BANK_ACCOUNT','EMAIL')
+  AND connected_user_type = 'CASH_CUSTOMER'
+GROUP BY
+  1, 2, 3, 4
+UNION
+SELECT
+  t.active_customer_id
+  , c.active_customer_id AS connected_active_customer_id
+  , 'CASH_FOR_TEENS_SPONSOR' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 1 AS connection_degree
+FROM token_list AS t
+JOIN app_compliance.cash.cash_global_cash_for_teens_sponsors AS cfts
+  ON t.token = cfts.dependent_customer_token
+LEFT JOIN app_compliance.cash.customers AS c
+  ON cfts.sponsor_customer_token = c.token
+UNION
+SELECT
+  t.active_customer_id
+  , c.active_customer_id AS connected_active_customer_id
+  , 'CASH_FOR_TEENS_SPONSORED' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 1 AS connection_degree
+FROM token_list AS t
+JOIN app_compliance.cash.cash_global_cash_for_teens_sponsors AS cfts
+  ON t.token = cfts.sponsor_customer_token
+LEFT JOIN app_compliance.cash.customers AS c
+  ON cfts.dependent_customer_token = c.token
+UNION
+SELECT
+  active_customer_id
+  , active_customer_id AS connected_active_customer_id
+  , 'SELF' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 0 AS connection_degree
+FROM token_list
+;
+
+CREATE OR REPLACE TEMP TABLE cin_cout AS
+WITH transfers_base AS (
+SELECT
+  cu.connected_active_customer_id
+  , t.type
+  , t.state
+  , t.token
+  , t.amount_cents
+FROM app_compliance.cash.transfers t
+JOIN conn_users AS cu
+  ON cu.connected_active_customer_id = t.customer_id
+WHERE
+  to_date(t.created_at) BETWEEN $START_DATE AND $END_DATE
+  AND type = 'CASH_IN'
+UNION ALL
+SELECT
+  cu.connected_active_customer_id
+  , 'CASH_IN' AS type
+  , state
+  , transfer_token AS token
+  , amount_cents
+FROM app_compliance.cash.cash_ins t
+JOIN conn_users AS cu
+  ON cu.connected_active_customer_id = t.active_customer_id
+WHERE
+  to_date(t.initiated_at) BETWEEN $START_DATE AND $END_DATE
+),
+transfers_dedup AS (
+SELECT connected_active_customer_id, type, state, token, amount_cents
+FROM transfers_base
+QUALIFY ROW_NUMBER() OVER (PARTITION BY token ORDER BY token) = 1
+),
+transfers_agg AS (
+SELECT connected_active_customer_id, type, state,
+  COUNT(DISTINCT token) AS cash_in_out_count,
+  SUM(amount_cents / 100) AS cash_in_out_total
+FROM transfers_dedup AS t
+GROUP BY 1, 2, 3
+)
+SELECT connected_active_customer_id,
+  SUM(CASE WHEN type = 'CASH_IN' AND state in ('COMPLETE', 'COMPLETED') THEN cash_in_out_count ELSE NULL END) AS successful_cash_in_count,
+  SUM(CASE WHEN type = 'CASH_IN' AND state = 'FAILED' THEN cash_in_out_count ELSE NULL END) AS failed_cash_in_count
+FROM transfers_agg
+GROUP BY 1
+ORDER BY 1
+;
+
+CREATE OR REPLACE TEMP TABLE cash_payments AS
+WITH p2p_base AS (
+SELECT cu.connected_active_customer_id, m.role, m.payment_state,
+  m.payment_id::STRING AS payment_token, m.movement_amount_cents AS amount_cents,
+  c.token AS counterparty_token
+FROM app_compliance.cash.movements m
+JOIN conn_users cu ON cu.connected_active_customer_id = m.customer_id
+JOIN app_compliance.cash.customers c ON m.original_counterparty_id = c.id
+WHERE TO_DATE(m.created_at) BETWEEN $START_DATE AND $END_DATE
+UNION ALL
+SELECT cu.connected_active_customer_id, t.role, t.payment_state,
+  t.payment_id::STRING AS payment_token, t.amount_cents, t.counterparty_token
+FROM app_compliance.cash.p2p_transactions t
+JOIN app_compliance.cash.customers c ON c.token = t.customer_token
+JOIN conn_users cu ON cu.connected_active_customer_id = c.id
+WHERE TO_DATE(t.created_at) BETWEEN $START_DATE AND $END_DATE
+),
+p2p_dedup AS (
+SELECT connected_active_customer_id, role, payment_state, payment_token, amount_cents, counterparty_token
+FROM p2p_base p
+QUALIFY ROW_NUMBER() OVER (PARTITION BY payment_token, role ORDER BY payment_token) = 1
+),
+distinct_counterparty_tokens AS (
+SELECT connected_active_customer_id, COUNT(DISTINCT counterparty_token) AS unique_senders_recipients
+FROM p2p_dedup GROUP BY 1
+),
+p2p_agg AS (
+SELECT p2p.connected_active_customer_id, p2p.role, p2p.payment_state,
+  dct.unique_senders_recipients,
+  COUNT(DISTINCT p2p.payment_token) AS movement_count,
+  SUM(p2p.amount_cents/100) AS total_amount_movement
+FROM p2p_dedup p2p
+LEFT JOIN distinct_counterparty_tokens dct ON p2p.connected_active_customer_id = dct.connected_active_customer_id
+GROUP BY 1,2,3,4
+)
+SELECT connected_active_customer_id,
+  SUM(CASE WHEN role = 'SENDER' AND payment_state NOT IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count ELSE NULL END) AS successful_sent_count,
+  SUM(CASE WHEN role IN ('RECIPIENT', 'RECIEVER') AND payment_state NOT IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count ELSE NULL END) AS successful_received_count,
+  SUM(CASE WHEN role = 'SENDER' AND payment_state IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count ELSE NULL END) AS failed_sent_count,
+  SUM(CASE WHEN role IN ('RECIPIENT', 'RECIEVER') AND payment_state IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count ELSE NULL END) AS failed_received_count,
+  MAX(unique_senders_recipients) AS unique_senders_recipients
+FROM p2p_agg GROUP BY 1
+;
+
+CREATE OR REPLACE TEMP TABLE btc_wd AS
+SELECT DISTINCT cu.connected_active_customer_id,
+  COUNT(DISTINCT t.token) AS withdrawal_count
+FROM app_compliance.cash.transactions t
+JOIN app_compliance.cash.instrument_links i ON t.instrument_token = i.instrument_token AND t.currency = 'BTC' AND t.reason_code = 'BITCOIN_TRANSFER'
+JOIN app_compliance.cash.customers c ON i.customer_id = c.id
+JOIN conn_users cu ON c.active_customer_id = cu.connected_active_customer_id
+WHERE TO_DATE(t.created_at) BETWEEN $START_DATE AND $END_DATE
+GROUP BY 1
+;
+
+CREATE OR REPLACE TEMP TABLE transfers_cb AS
+SELECT DISTINCT cu.connected_active_customer_id,
+  SUM(cb.payment_amount_cents / 100) AS total_transfer_chargeback
+FROM app_compliance.cash.chargebacks AS cb
+JOIN conn_users AS cu ON cb.sender_id = cu.connected_active_customer_id
+WHERE TO_DATE(cb.chargeback_date) BETWEEN $START_DATE AND $END_DATE
+GROUP BY 1
+;
+
+CREATE OR REPLACE TEMP TABLE sar AS
+SELECT cu.connected_active_customer_id,
+  LISTAGG(DISTINCT CASE WHEN sc.latest_case_status <> 'closed' THEN sc.case_token ELSE NULL END, ',') AS open_sar,
+  LISTAGG(DISTINCT CASE WHEN sc.latest_case_status = 'closed' THEN sc.case_token ELSE NULL END, ',') AS closed_sar
+FROM app_sar.sargent.cases AS sc
+JOIN app_sar.sargent.cases_users AS scu ON sc.case_token = scu.case_token
+JOIN app_compliance.cash.customers AS c ON c.token = scu.user_token
+JOIN conn_users AS cu ON c.active_customer_id = cu.connected_active_customer_id
+GROUP BY 1
+;
+
+CREATE OR REPLACE TEMP TABLE final AS
+SELECT
+  c.token AS input_token, c2.token AS connected_token, cu.connected_user_type AS type,
+  cu.connection_type, cu.connection_degree AS degree,
+  ci.successful_cash_in_count, ci.failed_cash_in_count,
+  cp.successful_sent_count, cp.successful_received_count,
+  cp.failed_sent_count, cp.failed_received_count,
+  cp.unique_senders_recipients, bt.withdrawal_count,
+  t.total_transfer_chargeback, s.open_sar, s.closed_sar
+FROM conn_users AS cu
+JOIN app_compliance.cash.customers AS c ON cu.active_customer_id = c.id
+JOIN app_compliance.cash.customers AS c2 ON cu.connected_active_customer_id = c2.id
+LEFT JOIN cin_cout AS ci ON cu.connected_active_customer_id = ci.connected_active_customer_id
+LEFT JOIN cash_payments AS cp ON cu.connected_active_customer_id = cp.connected_active_customer_id
+LEFT JOIN btc_wd AS bt ON bt.connected_active_customer_id = cu.connected_active_customer_id
+LEFT JOIN transfers_cb AS t ON t.connected_active_customer_id = cu.connected_active_customer_id
+LEFT JOIN sar AS s ON s.connected_active_customer_id = cu.connected_active_customer_id
+;
+
+SELECT base.*
+FROM (
+  SELECT input_token, connected_token,
+    LISTAGG(DISTINCT connection_type, ',') AS connection_type,
+    MIN(degree) AS degree,
+    COALESCE(successful_cash_in_count, 0) + COALESCE(failed_cash_in_count, 0) AS attempted_cash_in_cnt,
+    COALESCE(successful_sent_count, 0) + COALESCE(successful_received_count, 0) + COALESCE(failed_sent_count, 0) + COALESCE(failed_received_count, 0) AS attempted_p2p_cnt,
+    COALESCE(unique_senders_recipients, 0) AS unique_senders_recipients,
+    COALESCE(withdrawal_count, 0) AS withdrawal_count,
+    COALESCE(total_transfer_chargeback, 0) AS total_transfer_chargeback,
+    open_sar, closed_sar
+  FROM final
+  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10, 11
+) AS base
+WHERE degree <= 1
+ORDER BY 1 ASC, 4 ASC, 2 ASC;`;
+    }
+
+    function copyConnectedUsersQuery() {
+        const queryText = cuGeneratedQuery || document.getElementById('cuQueryPreview').textContent;
+        if (!queryText || queryText.startsWith('Enter tokens')) {
+            document.getElementById('cuStatus').innerHTML = '<span style="color:#e74c3c;">⚠️ Build a query first</span>';
+            return;
+        }
+        navigator.clipboard.writeText(queryText).then(() => {
+            document.getElementById('cuStatus').innerHTML = '<span style="color:#27ae60;">✅ Copied to clipboard!</span>';
+            setTimeout(() => {
+                document.getElementById('cuStatus').innerHTML = '';
+            }, 3000);
+        }).catch(() => {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = queryText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            document.getElementById('cuStatus').innerHTML = '<span style="color:#27ae60;">✅ Copied to clipboard!</span>';
+        });
+    }
+
+    function clearConnectedUsersForm() {
+        document.getElementById('cuTokensInput').value = '';
+        document.getElementById('cuStartDate').value = '';
+        document.getElementById('cuEndDate').value = '';
+        document.getElementById('cuQueryPreview').textContent = 'Enter tokens and date range above, then click "Build Query" to generate the SQL.';
+        document.getElementById('cuStmtCount').textContent = '';
+        document.getElementById('cuStatus').innerHTML = '';
+        document.getElementById('cuResultsSection').style.display = 'none';
+        cuGeneratedQuery = '';
+        cuResultsData = [];
+    }
+
+    function exportConnectedUsersCSV() {
+        if (cuResultsData.length === 0) return;
+        const headers = Object.keys(cuResultsData[0]);
+        let csv = headers.join(',') + '\n';
+        cuResultsData.forEach(row => {
+            csv += headers.map(h => {
+                let val = row[h] || '';
+                if (String(val).includes(',')) val = '"' + val + '"';
+                return val;
+            }).join(',') + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `connected-users-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    }
+
+    // Set default dates (last 90 days)
+    (function setDefaultDates() {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 90);
+        document.getElementById('cuEndDate').value = end.toISOString().split('T')[0];
+        document.getElementById('cuStartDate').value = start.toISOString().split('T')[0];
+    })();
+
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('trainingCount').textContent = trainingHistory.length;
         document.getElementById('sidebarTrainingCount').textContent = trainingHistory.length;

@@ -1726,6 +1726,51 @@ def clear_chat():
     return jsonify({'success': True})
 
 
+# ── CONNECTED USERS QUERY ──
+
+from connected_users_query import build_query, split_query_statements
+
+@app.route('/connected-users', methods=['POST'])
+def connected_users():
+    """
+    Execute the Connected Users query against Snowflake.
+    Expects JSON: { tokens: ["C_xxx", ...], start_date: "YYYY-MM-DD", end_date: "YYYY-MM-DD" }
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+
+        tokens = data.get('tokens', [])
+        start_date = data.get('start_date', '')
+        end_date = data.get('end_date', '')
+
+        if not tokens:
+            return jsonify({'error': 'At least one token is required'}), 400
+        if not start_date or not end_date:
+            return jsonify({'error': 'Both start_date and end_date are required'}), 400
+
+        # Build the full query
+        full_query = build_query(tokens, start_date, end_date)
+        statements = split_query_statements(full_query)
+
+        return jsonify({
+            'success': True,
+            'query': full_query,
+            'statements': statements,
+            'token_count': len(tokens),
+            'date_range': f"{start_date} to {end_date}",
+            'message': f'Query built with {len(tokens)} token(s) for date range {start_date} to {end_date}. '
+                       f'Contains {len(statements)} SQL statements. '
+                       f'Copy the query or execute it in your Snowflake worksheet.'
+        })
+
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Unexpected error: {str(e)}'}), 500
+
+
 if __name__ == '__main__':
     print("\n" + "="*60)
     print("SAR PLATFORM - WEB SERVER")
