@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+last_upload.csv
+demo_ui_old.html
+demo_ui_v2_backup.html
+.DS_Store
+/tmp/
+*.log
+kitt_rag_db/

@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAR Narrative Generator - Standalone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #e9ecef;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #495057;
+        }
+
+        .tab:hover {
+            background: #dee2e6;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1e3c72;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 150px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #1e3c72;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .mapping-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .mapping-row input {
+            flex: 1;
+        }
+
+        .comment-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .comment-item {
+            padding: 10px;
+            background: white;
+            border-left: 3px solid #dc3545;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .comment-item.safe {
+            border-left-color: #28a745;
+        }
+
+        .typology-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .typology-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .typology-item.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .typology-item h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .training-example {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .training-example h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-panel {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .comparison-panel h4 {
+            margin-bottom: 15px;
+            color: #1e3c72;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .config-section {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .counterparty-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .counterparty-table th,
+        .counterparty-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .counterparty-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .counterparty-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 SAR Narrative Generator</h1>
+            <p>Professional AI-powered analysis for Suspicious Activity Reports</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('workflow')">Workflow</button>
+            <button class="tab" onclick="switchTab('typologies')">Typology Library</button>
+            <button class="tab" onclick="switchTab('training')">Training Data</button>
+            <button class="tab" onclick="switchTab('settings')">Settings</button>
+        </div>
+
+        <div class="content">
+            <!-- WORKFLOW TAB -->
+            <div id="workflow-tab" class="tab-content">
+                <!-- Step 1: API Configuration -->
+                <div id="step1" class="step active">
+                    <div class="config-section">
+                        <h3>⚙️ API Configuration Required</h3>
+                        <p style="margin-bottom: 20px;">This standalone app requires an AI API key to generate narratives. Your key is stored locally in your browser and never sent anywhere except directly to the AI provider.</p>
+                        
+                        <div class="form-group">
+                            <label>Select AI Provider:</label>
+                            <select id="aiProvider" onchange="updateProviderInfo()">
+                                <option value="openai">OpenAI (GPT-4)</option>
+                                <option value="anthropic">Anthropic (Claude)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>API Key:</label>
+                            <input type="password" id="apiKey" placeholder="Enter your API key">
+                            <small style="color: #6c757d; display: block; margin-top: 5px;">
+                                <span id="providerInfo">Get your key at: <a href="https://platform.openai.com/api-keys" target="_blank">https://platform.openai.com/api-keys</a></span>
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Model:</label>
+                            <select id="aiModel">
+                                <option value="gpt-4o">GPT-4o (Recommended)</option>
+                                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                <option value="gpt-4">GPT-4</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-success" onclick="saveApiConfig()">Save Configuration</button>
+                    </div>
+
+                    <div id="apiConfigured" class="hidden">
+                        <div class="alert alert-success">
+                            ✅ API configured successfully! Ready to upload CSV.
+                        </div>
+                        <button class="btn btn-primary" onclick="goToStep(2)">Continue to CSV Upload</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: CSV Upload -->
+                <div id="step2" class="step">
+                    <h2>Step 1: Upload CSV File</h2>
+                    <div class="alert alert-info">
+                        Upload a CSV file containing financial transaction data with C-tokens as customer identifiers.
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select CSV File:</label>
+                        <input type="file" id="csvFile" accept=".csv" onchange="handleFileUpload(event)">
+                    </div>
+
+                    <div id="csvPreview" class="hidden">
+                        <div class="card">
+                            <h3>CSV Preview</h3>
+                            <p><strong>Total Rows:</strong> <span id="totalRows">0</span></p>
+                            <p><strong>Columns Detected:</strong> <span id="totalColumns">0</span></p>
+                            <div style="overflow-x: auto; margin-top: 15px;">
+                                <table id="previewTable" class="counterparty-table"></table>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="goToStep(3)">Continue to Subject Mapping</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Subject Mapping -->
+                <div id="step3" class="step">
+                    <h2>Step 2: Map Subject Identity</h2>
+                    <div class="alert alert-info">
+                        Identify the subject (USER_TOKEN) and provide their actual name for the narrative.
+                    </div>
+
+                    <div class="card">
+                        <h3>Subject Information</h3>
+                        <div id="subjectMapping"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="goToStep(4)">Continue to Analysis</button>
+                </div>
+
+                <!-- Step 4: Analysis Results -->
+                <div id="step4" class="step">
+                    <h2>Step 3: Transaction Analysis</h2>
+                    
+                    <div class="card">
+                        <h3>📊 Transaction Summary</h3>
+                        <div class="stats-grid" id="statsGrid"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🚩 Suspicious Indicators</h3>
+                        <div id="indicators"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>💬 Payment Comments Analysis</h3>
+                        <div id="commentsAnalysis"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>👥 Top Counterparties</h3>
+                        <table class="counterparty-table" id="counterpartyTable"></table>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="goToStep(5)">Continue to Narrative Generation</button>
+                </div>
+
+                <!-- Step 5: Narrative Generation -->
+                <div id="step5" class="step">
+                    <h2>Step 4: Generate SAR Narrative</h2>
+
+                    <div class="form-group">
+                        <label>Select Typology:</label>
+                        <select id="selectedTypology" onchange="updateTypologyInfo()">
+                            <option value="">-- Select Typology --</option>
+                        </select>
+                    </div>
+
+                    <div id="typologyInfo" class="card hidden">
+                        <h3>Typology Information</h3>
+                        <div id="typologyDetails"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateNarrative()" id="generateBtn">
+                        🤖 Generate Narrative
+                    </button>
+
+                    <div id="narrativeResult" class="hidden">
+                        <div class="card">
+                            <h3>Generated SAR Narrative</h3>
+                            <pre id="generatedNarrative" style="white-space: pre-wrap;"></pre>
+                        </div>
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="goToStep(6)">Continue to Training Mode</button>
+                            <button class="btn btn-secondary" onclick="exportNarrative()">Export Narrative</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Training Mode -->
+                <div id="step6" class="step">
+                    <h2>Step 5: Training Mode - Review & Correct</h2>
+
+                    <div class="alert alert-warning">
+                        <strong>Training Mode:</strong> Review the AI-generated analysis and narrative. Make corrections to improve future generations.
+                    </div>
+
+                    <div class="card">
+                        <h3>Classification</h3>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="classification" value="suspicious" checked>
+                                Suspicious Activity
+                            </label>
+                            <label>
+                                <input type="radio" name="classification" value="not-suspicious">
+                                Not Suspicious
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card" id="typologyConfirmCard">
+                        <h3>Confirm Typology</h3>
+                        <select id="confirmedTypology"></select>
+                    </div>
+
+                    <div class="card">
+                        <h3>Review/Correct Totals</h3>
+                        <div class="form-group">
+                            <label>Total Attempted Incoming Payments:</label>
+                            <input type="text" id="correctedIncoming" placeholder="e.g., 537 payments totaling $34,895.63">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Attempted Outgoing Payments:</label>
+                            <input type="text" id="correctedOutgoing" placeholder="e.g., 211 payments totaling $10,583.35">
+                        </div>
+                        <div class="form-group">
+                            <label>Net Flow:</label>
+                            <input type="text" id="correctedNetFlow" placeholder="e.g., $24,312.28">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Corrected Narrative</h3>
+                        <div class="comparison-view">
+                            <div class="comparison-panel">
+                                <h4>AI Generated</h4>
+                                <textarea id="aiNarrativeCompare" readonly></textarea>
+                            </div>
+                            <div class="comparison-panel">
+                                <h4>Your Corrected Version</h4>
+                                <textarea id="correctedNarrative" placeholder="Edit the narrative to match your professional standards..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes (Optional):</label>
+                        <textarea id="trainingNotes" placeholder="Any notes about this case, what the AI got wrong, or patterns to watch for..."></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="saveTrainingExample()">💾 Save as Training Example</button>
+                        <button class="btn btn-secondary" onclick="resetWorkflow()">Start New Analysis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPOLOGY LIBRARY TAB -->
+            <div id="typologies-tab" class="tab-content hidden">
+                <h2>Typology Library</h2>
+                <p style="margin-bottom: 20px; color: #6c757d;">Manage typologies and their indicators. The AI uses these to detect patterns and generate narratives.</p>
+
+                <button class="btn btn-primary" onclick="showAddTypology()">+ Add New Typology</button>
+
+                <div id="addTypologyForm" class="card hidden" style="margin-top: 20px;">
+                    <h3>Add New Typology</h3>
+                    <div class="form-group">
+                        <label>Typology Name:</label>
+                        <input type="text" id="newTypologyName" placeholder="e.g., Illegal Drug Sales">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea id="newTypologyDesc" placeholder="Describe the typology and what patterns to look for..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Key Indicators (one per line):</label>
+                        <textarea id="newTypologyIndicators" placeholder="Round dollar amounts between $10-$150&#10;High percentage of transactions under $100&#10;Many-to-One payment pattern"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Keywords/Slang Terms (comma-separated):</label>
+                        <textarea id="newTypologyKeywords" placeholder="cart, dispo, za, gas, plug, snow"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Example Narrative (Optional):</label>
+                        <textarea id="newTypologyExample" placeholder="Paste an example SAR narrative for this typology..."></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="saveNewTypology()">Save Typology</button>
+                        <button class="btn btn-secondary" onclick="cancelAddTypology()">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="typologyList" style="margin-top: 30px;"></div>
+            </div>
+
+            <!-- TRAINING DATA TAB -->
+            <div id="training-tab" class="tab-content hidden">
+                <h2>Training Data Library</h2>
+                <p style="margin-bottom: 20px; color: #6c757d;">Review and manage saved training examples. The AI learns from these approved cases.</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Examples</div>
+                        <div class="stat-value" id="totalExamples">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Suspicious Cases</div>
+                        <div class="stat-value" id="suspiciousExamples">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Non-Suspicious Cases</div>
+                        <div class="stat-value" id="nonSuspiciousExamples">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Typologies Covered</div>
+                        <div class="stat-value" id="typologiesCovered">0</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Filter by:</h3>
+                    <select id="trainingFilter" onchange="filterTrainingData()">
+                        <option value="all">All Examples</option>
+                        <option value="suspicious">Suspicious Only</option>
+                        <option value="not-suspicious">Non-Suspicious Only</option>
+                    </select>
+                </div>
+
+                <div id="trainingList" style="margin-top: 20px;"></div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="settings-tab" class="tab-content hidden">
+                <h2>Settings</h2>
+
+                <div class="card">
+                    <h3>API Configuration</h3>
+                    <div class="form-group">
+                        <label>AI Provider:</label>
+                        <select id="settingsProvider" onchange="updateSettingsProviderInfo()">
+                            <option value="openai">OpenAI (GPT-4)</option>
+                            <option value="anthropic">Anthropic (Claude)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>API Key:</label>
+                        <input type="password" id="settingsApiKey" placeholder="Enter your API key">
+                        <small style="color: #6c757d; display: block; margin-top: 5px;">
+                            <span id="settingsProviderInfo"></span>
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>Model:</label>
+                        <select id="settingsModel"></select>
+                    </div>
+                    <button class="btn btn-success" onclick="saveSettings()">Save Settings</button>
+                </div>
+
+                <div class="card">
+                    <h3>Data Management</h3>
+                    <button class="btn btn-secondary" onclick="exportAllData()">📥 Export All Data</button>
+                    <button class="btn btn-secondary" onclick="importData()">📤 Import Data</button>
+                    <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+                </div>
+
+                <div class="card">
+                    <h3>About</h3>
+                    <p><strong>Version:</strong> 1.0.0 Standalone</p>
+                    <p><strong>Purpose:</strong> Professional SAR narrative generation with AI assistance</p>
+                    <p style="margin-top: 15px; color: #6c757d; font-size: 13px;">
+                        This tool is designed for compliance professionals to analyze transaction patterns and generate 
+                        Suspicious Activity Report narratives. All data is processed locally in your browser.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let csvData = [];
+        let csvHeaders = [];
+        let analysisResults = {};
+        let currentSubject = '';
+        let drugSlangTerms = [];
+
+        // Drug slang dictionary
+        const DRUG_SLANG = {
+            marijuana: ['weed', 'pot', 'dope', 'grass', 'herb', 'bud', 'ganja', 'mary jane', 'chronic', 'reefer', 'za', 'zaza', 'gas', 'loud', 'fire', 'tree', 'green', 'kush', 'dank', 'pack', 'cart', 'cartridge', 'dispo', 'dispos', 'dispensary', 'pen', 'vape', 'thc', 'eighth', 'quarter', 'half', 'zip', 'ounce', 'blunt', 'joint', 'spliff', 'bowl', 'bong', 'dab', 'wax', 'shatter', 'edible'],
+            cocaine: ['coke', 'blow', 'snow', 'powder', 'white', 'yayo', 'nose candy', 'flake', 'crack', 'rock', 'base', 'hard', 'soft', 'yay', 'girl', 'white girl', 'charlie', 'coca', 'bump', 'line', 'rail', 'eight ball', 'ball', 'brick', 'key', 'kilo', 'bird'],
+            heroin: ['dope', 'smack', 'h', 'junk', 'tar', 'black', 'boy', 'china white', 'skag', 'horse', 'brown', 'mud', 'cheese', 'diesel', 'fent', 'fentanyl', 'blues', 'm30', 'percs', 'percocet', 'oxy', 'oxys', 'roxys', 'pills', 'tabs', 'beans'],
+            meth: ['meth', 'crystal', 'ice', 'glass', 'crank', 'speed', 'tweak', 'tina', 'shards', 'clear', 'go fast', 'chalk', 'gak', 'pookie'],
+            mdma: ['molly', 'ecstasy', 'x', 'e', 'rolls', 'beans'],
+            generic: ['stuff', 'shit', 'product', 'work', 'supply', 'plug', 'connect', 'dealer', 're-up', 'reup', 'cop', 'score', 'grab', 'pick up', 'pickup', 'drop', 'serve', 'front', 'spot', 'trap', 'move', 'flip', 'sack', 'bag', 'piece', 'weight', 'brick', 'bundle', 'stash', 'hustle', 'push', 'slang', 'deal'],
+            transaction: ['otw', 'on the way', 'omw', 'on my way', 'pull up', 'slide', 'swing by', 'come through', 'meet up', 'link', 'link up', 'hurry', 'quick', 'asap', 'rn', 'right now', 'add me', 'add my snap', 'snapchat', 'snap', 'hmu', 'hit me up', 'dm', 'text me', 'call me', 'number', 'contact', 'discreet', 'low key', 'lowkey', 'dl', 'down low']
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            loadTypologies();
+            loadTrainingData();
+            checkApiConfig();
+            updateProviderInfo();
+        }
+
+        function checkApiConfig() {
+            const apiKey = localStorage.getItem('apiKey');
+            const provider = localStorage.getItem('aiProvider');
+            
+            if (apiKey && provider) {
+                document.getElementById('apiKey').value = apiKey;
+                document.getElementById('aiProvider').value = provider;
+                document.getElementById('apiConfigured').classList.remove('hidden');
+            }
+        }
+
+        function updateProviderInfo() {
+            const provider = document.getElementById('aiProvider').value;
+            const infoSpan = document.getElementById('providerInfo');
+            const modelSelect = document.getElementById('aiModel');
+            
+            if (provider === 'openai') {
+                infoSpan.innerHTML = 'Get your key at: <a href="https://platform.openai.com/api-keys" target="_blank">https://platform.openai.com/api-keys</a>';
+                modelSelect.innerHTML = `
+                    <option value="gpt-4o">GPT-4o (Recommended)</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="gpt-4">GPT-4</option>
+                `;
+            } else if (provider === 'anthropic') {
+                infoSpan.innerHTML = 'Get your key at: <a href="https://console.anthropic.com/settings/keys" target="_blank">https://console.anthropic.com/settings/keys</a>';
+                modelSelect.innerHTML = `
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Recommended)</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                `;
+            }
+        }
+
+        function saveApiConfig() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const provider = document.getElementById('aiProvider').value;
+            const model = document.getElementById('aiModel').value;
+
+            if (!apiKey) {
+                alert('Please enter your API key');
+                return;
+            }
+
+            localStorage.setItem('apiKey', apiKey);
+            localStorage.setItem('aiProvider', provider);
+            localStorage.setItem('aiModel', model);
+
+            document.getElementById('apiConfigured').classList.remove('hidden');
+            alert('API configuration saved successfully!');
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+            // Refresh data if needed
+            if (tabName === 'typologies') {
+                displayTypologies();
+            } else if (tabName === 'training') {
+                displayTrainingData();
+            } else if (tabName === 'settings') {
+                loadSettingsTab();
+            }
+        }
+
+        function goToStep(stepNum) {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step' + stepNum).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            csvHeaders = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            csvData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length === csvHeaders.length) {
+                    const row = {};
+                    csvHeaders.forEach((header, index) => {
+                        row[header] = values[index];
+                    });
+                    csvData.push(row);
+                }
+            }
+
+            displayCSVPreview();
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            return result;
+        }
+
+        function displayCSVPreview() {
+            document.getElementById('totalRows').textContent = csvData.length;
+            document.getElementById('totalColumns').textContent = csvHeaders.length;
+
+            const table = document.getElementById('previewTable');
+            let html = '<thead><tr>';
+            csvHeaders.slice(0, 8).forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            csvData.slice(0, 5).forEach(row => {
+                html += '<tr>';
+                csvHeaders.slice(0, 8).forEach(header => {
+                    html += `<td>${row[header] || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+            table.innerHTML = html;
+
+            document.getElementById('csvPreview').classList.remove('hidden');
+        }
+
+        function goToStep(stepNum) {
+            if (stepNum === 3) {
+                displaySubjectMapping();
+            } else if (stepNum === 4) {
+                analyzeTransactions();
+            } else if (stepNum === 5) {
+                prepareNarrativeGeneration();
+            } else if (stepNum === 6) {
+                prepareTrainingMode();
+            }
+
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step' + stepNum).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function displaySubjectMapping() {
+            if (!csvData.length) return;
+
+            // Find the subject (USER_TOKEN)
+            const userTokens = new Set();
+            csvData.forEach(row => {
+                if (row.USER_TOKEN) {
+                    userTokens.add(row.USER_TOKEN);
+                }
+            });
+
+            const subjectDiv = document.getElementById('subjectMapping');
+            let html = '';
+
+            userTokens.forEach(token => {
+                html += `
+                    <div class="mapping-row">
+                        <input type="text" value="${token}" readonly style="flex: 1;">
+                        <span style="padding: 0 10px;">→</span>
+                        <input type="text" id="subject_${token}" placeholder="Enter actual name" style="flex: 1;">
+                    </div>
+                `;
+            });
+
+            subjectDiv.innerHTML = html;
+        }
+
+        function analyzeTransactions() {
+            if (!csvData.length) return;
+
+            // Get subject name
+            const userToken = csvData[0].USER_TOKEN;
+            const subjectInput = document.getElementById('subject_' + userToken);
+            currentSubject = subjectInput ? subjectInput.value || userToken : userToken;
+
+            // Analyze patterns
+            const analysis = {
+                totalTransactions: csvData.length,
+                incomingTransactions: [],
+                outgoingTransactions: [],
+                counterparties: {},
+                comments: [],
+                roundAmounts: 0,
+                underHundred: 0,
+                amounts: [],
+                dates: []
+            };
+
+            csvData.forEach(row => {
+                const amount = parseFloat(row.BASE_AMOUNT) || 0;
+                const direction = row.DIRECTION;
+                const status = row.TRANSACTION_STATUS;
+                const counterparty = row.COUNTERPARTY_TOKEN;
+                const comment = row.COMMENT || '';
+
+                // Track all transactions (including FAILED)
+                if (direction === 'IN') {
+                    analysis.incomingTransactions.push({ amount, status, counterparty, date: row.CREATED_AT });
+                } else if (direction === 'OUT') {
+                    analysis.outgoingTransactions.push({ amount, status, counterparty, date: row.CREATED_AT });
+                }
+
+                // Only analyze PAID_OUT for patterns
+                if (status === 'PAID_OUT') {
+                    analysis.amounts.push(amount);
+                    analysis.dates.push(row.CREATED_AT);
+
+                    // Check for round amounts
+                    if (amount === Math.floor(amount) && amount >= 10 && amount <= 150) {
+                        analysis.roundAmounts++;
+                    }
+
+                    // Check under $100
+                    if (amount <= 100) {
+                        analysis.underHundred++;
+                    }
+
+                    // Track counterparties
+                    if (!analysis.counterparties[counterparty]) {
+                        analysis.counterparties[counterparty] = {
+                            incoming: [],
+                            outgoing: [],
+                            failed: 0
+                        };
+                    }
+
+                    if (direction === 'IN') {
+                        analysis.counterparties[counterparty].incoming.push(amount);
+                    } else {
+                        analysis.counterparties[counterparty].outgoing.push(amount);
+                    }
+                }
+
+                // Collect comments
+                if (comment) {
+                    const slangFound = detectDrugSlang(comment);
+                    analysis.comments.push({
+                        text: comment,
+                        slang: slangFound,
+                        counterparty: counterparty
+                    });
+                }
+            });
+
+            // Calculate totals (ALL transactions including FAILED)
+            const totalIncoming = analysis.incomingTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+            const totalOutgoing = analysis.outgoingTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+            const netFlow = totalIncoming - totalOutgoing;
+
+            // Calculate averages (PAID_OUT only)
+            const avgAmount = analysis.amounts.length > 0 
+                ? analysis.amounts.reduce((a, b) => a + b, 0) / analysis.amounts.length 
+                : 0;
+
+            // Find high velocity counterparties
+            const highVelocity = Object.entries(analysis.counterparties)
+                .filter(([cp, data]) => (data.incoming.length + data.outgoing.length) >= 5)
+                .map(([cp, data]) => ({
+                    token: cp,
+                    totalTxs: data.incoming.length + data.outgoing.length,
+                    totalIn: data.incoming.reduce((a, b) => a + b, 0),
+                    totalOut: data.outgoing.reduce((a, b) => a + b, 0),
+                    countIn: data.incoming.length,
+                    countOut: data.outgoing.length
+                }))
+                .sort((a, b) => b.totalTxs - a.totalTxs);
+
+            // Store results
+            analysisResults = {
+                totalTransactions: csvData.length,
+                totalIncoming: analysis.incomingTransactions.length,
+                totalOutgoing: analysis.outgoingTransactions.length,
+                totalIncomingAmount: totalIncoming,
+                totalOutgoingAmount: totalOutgoing,
+                netFlow: netFlow,
+                paidOutCount: analysis.amounts.length,
+                roundAmountsPct: analysis.amounts.length > 0 ? (analysis.roundAmounts / analysis.amounts.length * 100) : 0,
+                underHundredPct: analysis.amounts.length > 0 ? (analysis.underHundred / analysis.amounts.length * 100) : 0,
+                avgAmount: avgAmount,
+                uniqueCounterparties: Object.keys(analysis.counterparties).length,
+                highVelocityCounterparties: highVelocity,
+                commentsWithSlang: analysis.comments.filter(c => c.slang.length > 0),
+                allComments: analysis.comments,
+                dateRange: analysis.dates.length > 0 ? {
+                    start: analysis.dates[0],
+                    end: analysis.dates[analysis.dates.length - 1]
+                } : null
+            };
+
+            displayAnalysis();
+        }
+
+        function detectDrugSlang(comment) {
+            const lowerComment = comment.toLowerCase();
+            const found = [];
+
+            Object.entries(DRUG_SLANG).forEach(([category, terms]) => {
+                terms.forEach(term => {
+                    if (lowerComment.includes(term.toLowerCase())) {
+                        found.push({ term, category });
+                    }
+                });
+            });
+
+            return found;
+        }
+
+        function displayAnalysis() {
+            // Display stats
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Transactions</div>
+                    <div class="stat-value">${analysisResults.totalTransactions}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Incoming Attempts</div>
+                    <div class="stat-value">${analysisResults.totalIncoming}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Outgoing Attempts</div>
+                    <div class="stat-value">${analysisResults.totalOutgoing}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Received</div>
+                    <div class="stat-value">$${analysisResults.totalIncomingAmount.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Sent</div>
+                    <div class="stat-value">$${analysisResults.totalOutgoingAmount.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Net Flow</div>
+                    <div class="stat-value">$${analysisResults.netFlow.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average Transaction</div>
+                    <div class="stat-value">$${analysisResults.avgAmount.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Unique Counterparties</div>
+                    <div class="stat-value">${analysisResults.uniqueCounterparties}</div>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+
+            // Display indicators
+            const indicatorsHtml = `
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 10px; background: white; margin-bottom: 10px; border-radius: 6px;">
+                        <strong>Round Dollar Amounts:</strong> ${analysisResults.roundAmountsPct.toFixed(1)}% of transactions
+                    </li>
+                    <li style="padding: 10px; background: white; margin-bottom: 10px; border-radius: 6px;">
+                        <strong>Transactions Under $100:</strong> ${analysisResults.underHundredPct.toFixed(1)}%
+                    </li>
+                    <li style="padding: 10px; background: white; margin-bottom: 10px; border-radius: 6px;">
+                        <strong>High-Velocity Counterparties:</strong> ${analysisResults.highVelocityCounterparties.length} (5+ transactions each)
+                    </li>
+                    <li style="padding: 10px; background: white; margin-bottom: 10px; border-radius: 6px;">
+                        <strong>Incoming Transaction Percentage:</strong> ${((analysisResults.totalIncoming / analysisResults.totalTransactions) * 100).toFixed(1)}%
+                    </li>
+                    <li style="padding: 10px; background: white; margin-bottom: 10px; border-radius: 6px;">
+                        <strong>Comments with Drug Slang:</strong> ${analysisResults.commentsWithSlang.length} detected
+                    </li>
+                </ul>
+            `;
+            document.getElementById('indicators').innerHTML = indicatorsHtml;
+
+            // Display comments with slang
+            let commentsHtml = '<div class="comment-list">';
+            analysisResults.commentsWithSlang.slice(0, 20).forEach(comment => {
+                const slangTerms = comment.slang.map(s => s.term).join(', ');
+                commentsHtml += `
+                    <div class="comment-item">
+                        <strong>Comment:</strong> "${comment.text}"<br>
+                        <small style="color: #dc3545;"><strong>Detected Terms:</strong> ${slangTerms}</small>
+                    </div>
+                `;
+            });
+            commentsHtml += '</div>';
+            document.getElementById('commentsAnalysis').innerHTML = commentsHtml;
+
+            // Display top counterparties
+            let tableHtml = `
+                <thead>
+                    <tr>
+                        <th>C-Token</th>
+                        <th>Total Txs</th>
+                        <th>Incoming</th>
+                        <th>Outgoing</th>
+                        <th>Total In</th>
+                        <th>Total Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            analysisResults.highVelocityCounterparties.slice(0, 10).forEach(cp => {
+                tableHtml += `
+                    <tr>
+                        <td>${cp.token}</td>
+                        <td>${cp.totalTxs}</td>
+                        <td>${cp.countIn}</td>
+                        <td>${cp.countOut}</td>
+                        <td>$${cp.totalIn.toFixed(2)}</td>
+                        <td>$${cp.totalOut.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += '</tbody>';
+            document.getElementById('counterpartyTable').innerHTML = tableHtml;
+        }
+
+        function prepareNarrativeGeneration() {
+            // Populate typology dropdown
+            const typologies = getTypologies();
+            const select = document.getElementById('selectedTypology');
+            select.innerHTML = '<option value="">-- Select Typology --</option>';
+            
+            typologies.forEach(typ => {
+                select.innerHTML += `<option value="${typ.name}">${typ.name}</option>`;
+            });
+        }
+
+        function updateTypologyInfo() {
+            const typologyName = document.getElementById('selectedTypology').value;
+            if (!typologyName) {
+                document.getElementById('typologyInfo').classList.add('hidden');
+                return;
+            }
+
+            const typologies = getTypologies();
+            const typology = typologies.find(t => t.name === typologyName);
+
+            if (typology) {
+                const infoDiv = document.getElementById('typologyDetails');
+                infoDiv.innerHTML = `
+                    <p><strong>Description:</strong> ${typology.description}</p>
+                    <p style="margin-top: 10px;"><strong>Key Indicators:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        ${typology.indicators.map(ind => `<li>${ind}</li>`).join('')}
+                    </ul>
+                `;
+                document.getElementById('typologyInfo').classList.remove('hidden');
+            }
+        }
+
+        async function generateNarrative() {
+            const apiKey = localStorage.getItem('apiKey');
+            const provider = localStorage.getItem('aiProvider');
+            const model = localStorage.getItem('aiModel');
+
+            if (!apiKey) {
+                alert('Please configure your API key in Settings first!');
+                switchTab('settings');
+                return;
+            }
+
+            const typologyName = document.getElementById('selectedTypology').value;
+            if (!typologyName) {
+                alert('Please select a typology first!');
+                return;
+            }
+
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; display: inline-block; margin-right: 10px;"></div>Generating...';
+
+            try {
+                const narrative = await callAIAPI(provider, model, apiKey, typologyName);
+                document.getElementById('generatedNarrative').textContent = narrative;
+                document.getElementById('narrativeResult').classList.remove('hidden');
+            } catch (error) {
+                alert('Error generating narrative: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '🤖 Generate Narrative';
+            }
+        }
+
+        async function callAIAPI(provider, model, apiKey, typologyName) {
+            // Get typology and training examples
+            const typologies = getTypologies();
+            const typology = typologies.find(t => t.name === typologyName);
+            const trainingExamples = getTrainingExamples(typologyName);
+
+            // Build prompt
+            const prompt = buildNarrativePrompt(typology, trainingExamples);
+
+            if (provider === 'openai') {
+                return await callOpenAI(model, apiKey, prompt);
+            } else if (provider === 'anthropic') {
+                return await callAnthropic(model, apiKey, prompt);
+            }
+        }
+
+        async function callOpenAI(model, apiKey, prompt) {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are a professional compliance analyst with 8 years of experience writing Suspicious Activity Reports. Your writing is precise, formal, and follows legal writing standards. You never use relative terms like "small" or "large" - only specific dollar amounts and percentages.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API request failed');
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        async function callAnthropic(model, apiKey, prompt) {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: model,
+                    max_tokens: 2000,
+                    system: 'You are a professional compliance analyst with 8 years of experience writing Suspicious Activity Reports. Your writing is precise, formal, and follows legal writing standards. You never use relative terms like "small" or "large" - only specific dollar amounts and percentages.',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.7
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API request failed');
+            }
+
+            const data = await response.json();
+            return data.content[0].text;
+        }
+
+        function buildNarrativePrompt(typology, trainingExamples) {
+            // Get sample comments
+            const sampleComments = analysisResults.commentsWithSlang
+                .slice(0, 8)
+                .map(c => c.text)
+                .join('", "');
+
+            // Get example counterparty
+            const exampleCP = analysisResults.highVelocityCounterparties[0];
+            const exampleCPData = analysisResults.incomingTransactions.filter(tx => tx.counterparty === exampleCP.token);
+            const exampleMinAmount = Math.min(...exampleCPData.map(tx => tx.amount));
+            const exampleMaxAmount = Math.max(...exampleCPData.map(tx => tx.amount));
+            const exampleTotal = exampleCPData.reduce((sum, tx) => sum + tx.amount, 0);
+            const exampleStartDate = exampleCPData[0].date;
+            const exampleEndDate = exampleCPData[exampleCPData.length - 1].date;
+
+            let prompt = `You are writing a Suspicious Activity Report narrative for ${typology.name}.
+
+CRITICAL WRITING RULES:
+1. Be concise and professional - legal writing style
+2. NO headers or section titles
+3. NO relative terms (small, large, significant, numerous, substantial)
+4. Use specific dollar amounts and percentages with "roughly" before them
+5. Follow the EXACT 4-paragraph structure below
+6. Only use date ranges for specific examples, not summary statements
+7. Say "many" instead of counting how many comments had slang
+8. Keep counterparties as C-tokens (don't make up names)
+
+TRANSACTION DATA:
+- Subject: ${currentSubject}
+- Total Transactions: ${analysisResults.totalTransactions}
+- Incoming: ${analysisResults.totalIncoming} attempts totaling $${analysisResults.totalIncomingAmount.toFixed(2)}
+- Outgoing: ${analysisResults.totalOutgoing} attempts totaling $${analysisResults.totalOutgoingAmount.toFixed(2)}
+- Paid Out: ${analysisResults.paidOutCount} transactions
+- Round Amounts: ${analysisResults.roundAmountsPct.toFixed(0)}%
+- Under $100: ${analysisResults.underHundredPct.toFixed(0)}%
+- Average: $${analysisResults.avgAmount.toFixed(2)}
+- High-Velocity Counterparties: ${analysisResults.highVelocityCounterparties.length}
+- Unique Counterparties: ${analysisResults.uniqueCounterparties}
+- Incoming %: ${((analysisResults.totalIncoming / analysisResults.totalTransactions) * 100).toFixed(0)}%
+
+SAMPLE PAYMENT COMMENTS:
+"${sampleComments}"
+
+EXAMPLE HIGH-VELOCITY COUNTERPARTY:
+${exampleCP.token} attempted ${exampleCP.countIn} payments ranging from $${exampleMinAmount.toFixed(2)} to $${exampleMaxAmount.toFixed(2)}, totaling $${exampleTotal.toFixed(2)} from ${exampleStartDate} to ${exampleEndDate}
+
+`;
+
+            // Add training examples if available
+            if (trainingExamples.length > 0) {
+                prompt += '\nEXAMPLE NARRATIVES (use these as style guides):\n\n';
+                trainingExamples.slice(0, 3).forEach((example, i) => {
+                    prompt += `Example ${i + 1}:\n${example.narrative}\n\n`;
+                });
+            }
+
+            prompt += `
+REQUIRED 4-PARAGRAPH STRUCTURE:
+
+Paragraph 1: Opening + Payment Comments
+Start with "Analysis of P2P transactions in the subject's account revealed multiple red flags consistent with ${typology.name.toLowerCase()}." Then describe payment comments with specific quoted examples and mention emoji symbols if relevant.
+
+Paragraph 2: Transaction Patterns
+Start with "Additionally," and describe round dollar amount percentage, under $100 percentage, average transaction amount, and high-velocity counterparties suggesting repeated business relationships.
+
+Paragraph 3: Flow Pattern + Specific Example
+Start with "Additionally, the predominant flow of funds was from multiple unique counterparties to the subject account." Then provide ONE specific counterparty example with date range, number of payments, amount range, and total. End with overall incoming transaction statistics.
+
+Paragraph 4: Conclusion
+"In conclusion, based on the flow of funds and payment comments, the subject appears to be utilizing their Cash App account to facilitate ${typology.name.toLowerCase()}."
+
+Generate the narrative now following these rules EXACTLY:`;
+
+            return prompt;
+        }
+
+        function prepareTrainingMode() {
+            // Populate confirmed typology dropdown
+            const typologies = getTypologies();
+            const select = document.getElementById('confirmedTypology');
+            const selectedTypology = document.getElementById('selectedTypology').value;
+            
+            select.innerHTML = '';
+            typologies.forEach(typ => {
+                const selected = typ.name === selectedTypology ? 'selected' : '';
+                select.innerHTML += `<option value="${typ.name}" ${selected}>${typ.name}</option>`;
+            });
+
+            // Pre-fill totals
+            document.getElementById('correctedIncoming').value = 
+                `${analysisResults.totalIncoming} payments totaling $${analysisResults.totalIncomingAmount.toFixed(2)}`;
+            document.getElementById('correctedOutgoing').value = 
+                `${analysisResults.totalOutgoing} payments totaling $${analysisResults.totalOutgoingAmount.toFixed(2)}`;
+            document.getElementById('correctedNetFlow').value = 
+                `$${analysisResults.netFlow.toFixed(2)}`;
+
+            // Copy narrative to comparison view
+            const narrative = document.getElementById('generatedNarrative').textContent;
+            document.getElementById('aiNarrativeCompare').value = narrative;
+            document.getElementById('correctedNarrative').value = narrative;
+        }
+
+        function saveTrainingExample() {
+            const classification = document.querySelector('input[name="classification"]:checked').value;
+            const typology = document.getElementById('confirmedTypology').value;
+            const correctedNarrative = document.getElementById('correctedNarrative').value;
+            const notes = document.getElementById('trainingNotes').value;
+
+            if (!correctedNarrative.trim()) {
+                alert('Please provide a corrected narrative');
+                return;
+            }
+
+            const trainingExample = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                classification: classification,
+                typology: classification === 'suspicious' ? typology : 'N/A',
+                narrative: correctedNarrative,
+                notes: notes,
+                analysis: analysisResults,
+                subject: currentSubject
+            };
+
+            // Save to localStorage
+            const examples = JSON.parse(localStorage.getItem('trainingExamples') || '[]');
+            examples.push(trainingExample);
+            localStorage.setItem('trainingExamples', JSON.stringify(examples));
+
+            alert('Training example saved successfully! The AI will learn from this for future generations.');
+            resetWorkflow();
+        }
+
+        function resetWorkflow() {
+            csvData = [];
+            csvHeaders = [];
+            analysisResults = {};
+            currentSubject = '';
+            
+            document.getElementById('csvFile').value = '';
+            document.getElementById('csvPreview').classList.add('hidden');
+            document.getElementById('narrativeResult').classList.add('hidden');
+            
+            goToStep(2);
+        }
+
+        // Typology Management
+        function loadTypologies() {
+            const defaultTypologies = [
+                {
+                    name: 'Illegal Drug Sales',
+                    description: 'Street-level drug sales facilitated through P2P payment platforms',
+                    indicators: [
+                        'Round dollar amounts between $10-$150 (high percentage)',
+                        'High percentage of transactions under $100',
+                        'Many-to-One payment pattern (multiple unique counterparties to subject)',
+                        'Payment comments containing drug slang terminology',
+                        'High-velocity counterparties (5+ transactions each)',
+                        'Bidirectional flow with same counterparties',
+                        'Contact solicitation in payment comments (add snap, text me, etc.)',
+                        'Net positive cash flow',
+                        'Incoming transactions dominate (70%+ of activity)'
+                    ],
+                    keywords: ['cart', 'cartridge', 'dispo', 'dispos', 'dispensary', 'za', 'zaza', 'gas', 'loud', 'fire', 'plug', 'snow', 'coke', 'blow', 'dope', 'weed', 'pot', 'herb', 'bud', 'green', 'tree', 'pack', 'bag', 'sack', 'eighth', 'quarter', 'ounce', 'gram', 'otw', 'on the way', 'pull up', 'slide', 'meet up', 'link up', 'add snap', 'add my snap', 'snapchat', 'hmu', 'hit me up'],
+                    exampleNarrative: `Analysis of P2P transactions in the subject's account revealed multiple red flags consistent with illegal drug sales. The P2P payment comments entered by the senders of funds were reviewed and contained keywords such as "For cart", "dispos", "snow yo plug", "gas", "cart n pen", "Jeremy homie I'm here behind apts in shade hurry", "for the za", "otw for th shit", "don't want money just an 80 bag", and emoji symbols consistent with marijuana and/or illegal drug sales. Additionally, roughly 96% of transactions were for round dollar amounts, with roughly 88% of transactions for amounts under $100.00, with an average transaction amount of $60.80. The analysis identified 44 high-velocity counterparties experiencing 5 or more transactions each suggesting repeated business relationships. Additionally, the predominant flow of funds was from multiple unique counterparties to the subject account. For example, from 09/12/2023 to 12/02/2023 C_0tezd8yr5 attempted 27 payments to the subject ranging from $3.00 to $80.00, and totaling $961.00. In total, of the 748 attempted P2P transactions 537 were incoming, representing roughly 72% of the P2P activity.
+
+In conclusion, based on the flow of funds and payment comments, the subject appears to be utilizing their Cash App account to facilitate illegal drug sales.`
+                }
+            ];
+
+            if (!localStorage.getItem('typologies')) {
+                localStorage.setItem('typologies', JSON.stringify(defaultTypologies));
+            }
+        }
+
+        function getTypologies() {
+            return JSON.parse(localStorage.getItem('typologies') || '[]');
+        }
+
+        function displayTypologies() {
+            const typologies = getTypologies();
+            const listDiv = document.getElementById('typologyList');
+
+            if (typologies.length === 0) {
+                listDiv.innerHTML = '<p style="color: #6c757d;">No typologies yet. Add your first one above.</p>';
+                return;
+            }
+
+            let html = '';
+            typologies.forEach((typ, index) => {
+                html += `
+                    <div class="typology-item">
+                        <h4>${typ.name}</h4>
+                        <p style="color: #6c757d; margin-bottom: 10px;">${typ.description}</p>
+                        <p style="font-size: 13px;"><strong>Indicators:</strong> ${typ.indicators.length}</p>
+                        <p style="font-size: 13px;"><strong>Keywords:</strong> ${typ.keywords.length}</p>
+                        <div class="button-group" style="margin-top: 15px;">
+                            <button class="btn btn-secondary" onclick="editTypology(${index})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteTypology(${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        function showAddTypology() {
+            document.getElementById('addTypologyForm').classList.remove('hidden');
+        }
+
+        function cancelAddTypology() {
+            document.getElementById('addTypologyForm').classList.add('hidden');
+            document.getElementById('newTypologyName').value = '';
+            document.getElementById('newTypologyDesc').value = '';
+            document.getElementById('newTypologyIndicators').value = '';
+            document.getElementById('newTypologyKeywords').value = '';
+            document.getElementById('newTypologyExample').value = '';
+        }
+
+        function saveNewTypology() {
+            const name = document.getElementById('newTypologyName').value.trim();
+            const description = document.getElementById('newTypologyDesc').value.trim();
+            const indicators = document.getElementById('newTypologyIndicators').value
+                .split('\n')
+                .map(i => i.trim())
+                .filter(i => i);
+            const keywords = document.getElementById('newTypologyKeywords').value
+                .split(',')
+                .map(k => k.trim())
+                .filter(k => k);
+            const exampleNarrative = document.getElementById('newTypologyExample').value.trim();
+
+            if (!name || !description) {
+                alert('Please provide at least a name and description');
+                return;
+            }
+
+            const typologies = getTypologies();
+            typologies.push({
+                name,
+                description,
+                indicators,
+                keywords,
+                exampleNarrative
+            });
+
+            localStorage.setItem('typologies', JSON.stringify(typologies));
+            cancelAddTypology();
+            displayTypologies();
+            alert('Typology added successfully!');
+        }
+
+        function deleteTypology(index) {
+            if (!confirm('Are you sure you want to delete this typology?')) return;
+
+            const typologies = getTypologies();
+            typologies.splice(index, 1);
+            localStorage.setItem('typologies', JSON.stringify(typologies));
+            displayTypologies();
+        }
+
+        function editTypology(index) {
+            const typologies = getTypologies();
+            const typ = typologies[index];
+
+            document.getElementById('newTypologyName').value = typ.name;
+            document.getElementById('newTypologyDesc').value = typ.description;
+            document.getElementById('newTypologyIndicators').value = typ.indicators.join('\n');
+            document.getElementById('newTypologyKeywords').value = typ.keywords.join(', ');
+            document.getElementById('newTypologyExample').value = typ.exampleNarrative || '';
+
+            showAddTypology();
+            
+            // Change save button to update
+            const saveBtn = document.querySelector('#addTypologyForm .btn-success');
+            saveBtn.textContent = 'Update Typology';
+            saveBtn.onclick = function() {
+                typologies[index] = {
+                    name: document.getElementById('newTypologyName').value.trim(),
+                    description: document.getElementById('newTypologyDesc').value.trim(),
+                    indicators: document.getElementById('newTypologyIndicators').value.split('\n').map(i => i.trim()).filter(i => i),
+                    keywords: document.getElementById('newTypologyKeywords').value.split(',').map(k => k.trim()).filter(k => k),
+                    exampleNarrative: document.getElementById('newTypologyExample').value.trim()
+                };
+                localStorage.setItem('typologies', JSON.stringify(typologies));
+                cancelAddTypology();
+                displayTypologies();
+                alert('Typology updated successfully!');
+            };
+        }
+
+        // Training Data Management
+        function loadTrainingData() {
+            if (!localStorage.getItem('trainingExamples')) {
+                localStorage.setItem('trainingExamples', '[]');
+            }
+        }
+
+        function getTrainingExamples(typologyName = null) {
+            const examples = JSON.parse(localStorage.getItem('trainingExamples') || '[]');
+            if (typologyName) {
+                return examples.filter(ex => ex.typology === typologyName && ex.classification === 'suspicious');
+            }
+            return examples;
+        }
+
+        function displayTrainingData() {
+            const examples = getTrainingExamples();
+            
+            // Update stats
+            const suspicious = examples.filter(ex => ex.classification === 'suspicious');
+            const nonSuspicious = examples.filter(ex => ex.classification === 'not-suspicious');
+            const typologies = new Set(suspicious.map(ex => ex.typology));
+
+            document.getElementById('totalExamples').textContent = examples.length;
+            document.getElementById('suspiciousExamples').textContent = suspicious.length;
+            document.getElementById('nonSuspiciousExamples').textContent = nonSuspicious.length;
+            document.getElementById('typologiesCovered').textContent = typologies.size;
+
+            filterTrainingData();
+        }
+
+        function filterTrainingData() {
+            const filter = document.getElementById('trainingFilter').value;
+            const examples = getTrainingExamples();
+            const listDiv = document.getElementById('trainingList');
+
+            let filtered = examples;
+            if (filter === 'suspicious') {
+                filtered = examples.filter(ex => ex.classification === 'suspicious');
+            } else if (filter === 'not-suspicious') {
+                filtered = examples.filter(ex => ex.classification === 'not-suspicious');
+            }
+
+            if (filtered.length === 0) {
+                listDiv.innerHTML = '<p style="color: #6c757d; margin-top: 20px;">No training examples yet. Complete analyses and save them in Training Mode.</p>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((example, index) => {
+                const badgeClass = example.classification === 'suspicious' ? 'badge-danger' : 'badge-success';
+                const badgeText = example.classification === 'suspicious' ? 'Suspicious' : 'Not Suspicious';
+                
+                html += `
+                    <div class="training-example">
+                        <h4>
+                            <span>
+                                <span class="badge ${badgeClass}">${badgeText}</span>
+                                ${example.classification === 'suspicious' ? `<span class="badge badge-info">${example.typology}</span>` : ''}
+                            </span>
+                            <span style="font-size: 14px; font-weight: normal; color: #6c757d;">${new Date(example.date).toLocaleDateString()}</span>
+                        </h4>
+                        <p><strong>Subject:</strong> ${example.subject}</p>
+                        <details style="margin-top: 10px;">
+                            <summary style="cursor: pointer; color: #667eea;">View Narrative</summary>
+                            <pre style="margin-top: 10px; white-space: pre-wrap;">${example.narrative}</pre>
+                        </details>
+                        ${example.notes ? `<p style="margin-top: 10px; font-size: 13px; color: #6c757d;"><strong>Notes:</strong> ${example.notes}</p>` : ''}
+                        <button class="btn btn-danger" style="margin-top: 10px;" onclick="deleteTrainingExample(${index})">Delete</button>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        function deleteTrainingExample(index) {
+            if (!confirm('Delete this training example?')) return;
+
+            const examples = JSON.parse(localStorage.getItem('trainingExamples') || '[]');
+            examples.splice(index, 1);
+            localStorage.setItem('trainingExamples', JSON.stringify(examples));
+            displayTrainingData();
+        }
+
+        // Settings Management
+        function loadSettingsTab() {
+            const apiKey = localStorage.getItem('apiKey') || '';
+            const provider = localStorage.getItem('aiProvider') || 'openai';
+            const model = localStorage.getItem('aiModel') || 'gpt-4o';
+
+            document.getElementById('settingsApiKey').value = apiKey;
+            document.getElementById('settingsProvider').value = provider;
+            updateSettingsProviderInfo();
+            document.getElementById('settingsModel').value = model;
+        }
+
+        function updateSettingsProviderInfo() {
+            const provider = document.getElementById('settingsProvider').value;
+            const infoSpan = document.getElementById('settingsProviderInfo');
+            const modelSelect = document.getElementById('settingsModel');
+            
+            if (provider === 'openai') {
+                infoSpan.innerHTML = 'Get your key at: <a href="https://platform.openai.com/api-keys" target="_blank">https://platform.openai.com/api-keys</a>';
+                modelSelect.innerHTML = `
+                    <option value="gpt-4o">GPT-4o (Recommended)</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="gpt-4">GPT-4</option>
+                `;
+            } else if (provider === 'anthropic') {
+                infoSpan.innerHTML = 'Get your key at: <a href="https://console.anthropic.com/settings/keys" target="_blank">https://console.anthropic.com/settings/keys</a>';
+                modelSelect.innerHTML = `
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Recommended)</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                `;
+            }
+        }
+
+        function saveSettings() {
+            const apiKey = document.getElementById('settingsApiKey').value.trim();
+            const provider = document.getElementById('settingsProvider').value;
+            const model = document.getElementById('settingsModel').value;
+
+            if (!apiKey) {
+                alert('Please enter your API key');
+                return;
+            }
+
+            localStorage.setItem('apiKey', apiKey);
+            localStorage.setItem('aiProvider', provider);
+            localStorage.setItem('aiModel', model);
+
+            alert('Settings saved successfully!');
+        }
+
+        function exportAllData() {
+            const data = {
+                typologies: getTypologies(),
+                trainingExamples: getTrainingExamples(),
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sar-training-data-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.typologies) {
+                        localStorage.setItem('typologies', JSON.stringify(data.typologies));
+                    }
+                    if (data.trainingExamples) {
+                        localStorage.setItem('trainingExamples', JSON.stringify(data.trainingExamples));
+                    }
+
+                    alert('Data imported successfully!');
+                    initializeApp();
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (!confirm('Are you sure you want to clear ALL data? This cannot be undone!')) return;
+            if (!confirm('Really? This will delete all typologies and training examples!')) return;
+
+            localStorage.removeItem('typologies');
+            localStorage.removeItem('trainingExamples');
+            initializeApp();
+            alert('All data cleared!');
+        }
+
+        function exportNarrative() {
+            const narrative = document.getElementById('generatedNarrative').textContent;
+            const blob = new Blob([narrative], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sar-narrative-${currentSubject}-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
