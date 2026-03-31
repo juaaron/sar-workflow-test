@@ -1,5 +1,5 @@
 """
-kitt Lab — Pre-Analysis Engine
+SAR Workflow Test Lab — Pre-Analysis Engine
 
 Runs comprehensive analysis on CSV data BEFORE sending to the LLM.
 Produces detailed findings that the LLM then writes into a report.

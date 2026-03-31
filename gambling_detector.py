@@ -1,5 +1,5 @@
 """
-KITT - Gambling Detector
+SAR Workflow Test - Gambling Detector
 Distinguishes between Gambling FACILITATION (suspicious) and Gambling PARTICIPATION (not suspicious)
 
 KEY COMPLIANCE RULE:
@@ -8,7 +8,7 @@ KEY COMPLIANCE RULE:
   - PARTICIPATION = Subject uses their OWN Cash Card to buy at gambling sites
     → P2P is normal family/personal activity → NOT SAR-worthy
     
-The question KITT asks: "Where is the gambling money coming from?"
+The question SAR Workflow Test asks: "Where is the gambling money coming from?"
   - From many P2P senders → Facilitation → Flag it
   - From their own bank/card → Participation → Don't flag it
 """

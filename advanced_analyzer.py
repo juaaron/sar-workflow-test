@@ -389,6 +389,6 @@ if __name__ == "__main__":
         csv_path = sys.argv[1]
     else:
         # Test with B3D4FAB9AE
-        csv_path = '/Users/gkirk/Desktop/kitt Training CSV\'s/Drug Sales/SAR/B3D4FAB9AE.csv'
+        csv_path = '/Users/gkirk/Desktop/sar-workflow-test Training CSV\'s/Drug Sales/SAR/B3D4FAB9AE.csv'
     
     results = analyze_case_advanced(csv_path)

@@ -1,5 +1,5 @@
 """
-kitt - SAR Narrative Generator
+SAR Workflow Test - SAR Narrative Generator
 Auto-generates SAR narratives from CSV analysis results in Block/Cash App style.
 
 Matches the exact writing style, paragraph structure, and terminology
@@ -15,7 +15,7 @@ from datetime import datetime
 
 class NarrativeGenerator:
     """
-    Generates SAR narrative drafts from kitt analysis results.
+    Generates SAR narrative drafts from SAR Workflow Test analysis results.
     
     Supports typologies:
     - Drug Sales
@@ -55,7 +55,7 @@ class NarrativeGenerator:
     
     def generate_narrative(self, analysis: Dict, case_id: str = '') -> Dict:
         """
-        Generate a complete SAR narrative from kitt analysis results.
+        Generate a complete SAR narrative from SAR Workflow Test analysis results.
         
         Args:
             analysis: The full analysis results from final_analyzer
@@ -367,10 +367,10 @@ class NarrativeGenerator:
     def _generate_typology_analysis(self, typ_names: List[str], analysis: Dict) -> str:
         """Generate typology-specific analysis paragraphs.
         
-        For typologies kitt detected: full paragraph with evidence.
+        For typologies SAR Workflow Test detected: full paragraph with evidence.
         For typologies manually added by analyst: skeleton paragraph for analyst to complete.
         """
-        # Determine which typologies kitt actually detected
+        # Determine which typologies SAR Workflow Test actually detected
         detected_typologies = set()
         for t in analysis.get('typologies', []):
             if isinstance(t, dict):
@@ -747,7 +747,7 @@ class CaseNotesGenerator:
     
     def generate_case_notes(self, analysis: Dict, case_id: str = '') -> Dict:
         """
-        Generate case notes from kitt analysis results.
+        Generate case notes from SAR Workflow Test analysis results.
         
         Returns:
             Dict with 'case_notes' (full text) and 'fields' (structured)
@@ -851,7 +851,7 @@ class CaseNotesGenerator:
 
 
 if __name__ == "__main__":
-    print("kitt Narrative Generator")
+    print("SAR Workflow Test Narrative Generator")
     print("=" * 40)
     print("Supported typologies:")
     print("  - Drug Sales")

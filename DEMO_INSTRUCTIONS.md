@@ -36,7 +36,7 @@ Open your browser to: **http://localhost:5000**
 
 ## Test Cases Available
 
-Located in: `/Users/gkirk/Desktop/kitt Training CSV's/`
+Located in: `/Users/gkirk/Desktop/sar-workflow-test Training CSV's/`
 
 ### Drug Sales
 - `Drug Sales/SAR/B456100271.csv` - Expected: Drug Sales (90%)

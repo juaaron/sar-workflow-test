@@ -1,5 +1,5 @@
 """
-kitt - Adult Services / HT Detector
+SAR Workflow Test - Adult Services / HT Detector
 Detects patterns consistent with prostitution, escort services, and online sexual content sales.
 
 KEY INDICATORS:

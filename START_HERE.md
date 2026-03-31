@@ -1,6 +1,6 @@
-# 🚀 KITT - START HERE
+# 🚀 SAR Workflow Test - START HERE
 
-**Welcome to KITT - AI Investigation Tool by Block, Inc.**
+**Welcome to SAR Workflow Test - AI Investigation Tool by Block, Inc.**
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### Start the Demo
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 ./START_DEMO.sh
 ```
 
@@ -29,7 +29,7 @@ Drag and drop any transaction CSV and see results in 5 seconds!
 
 ---
 
-## ✅ What KITT Does
+## ✅ What SAR Workflow Test Does
 
 - ✅ Detects Drug Sales, Money Laundering, Gambling
 - ✅ Filters out Legitimate Business (reduces false positives)
@@ -43,9 +43,9 @@ Drag and drop any transaction CSV and see results in 5 seconds!
 ## 🎯 Test It Now
 
 Try these test cases:
-- Drug Sales: `/Users/gkirk/Desktop/kitt Training CSV's/Drug Sales/SAR/B456100271.csv`
-- Gambling: `/Users/gkirk/Desktop/kitt Training CSV's/Gambling/SAR/22351949.csv`
-- Legitimate: `/Users/gkirk/Desktop/kitt Training CSV's/Ht:Prost/NSAR/17899254.csv`
+- Drug Sales: `/Users/gkirk/Desktop/sar-workflow-test Training CSV's/Drug Sales/SAR/B456100271.csv`
+- Gambling: `/Users/gkirk/Desktop/sar-workflow-test Training CSV's/Gambling/SAR/22351949.csv`
+- Legitimate: `/Users/gkirk/Desktop/sar-workflow-test Training CSV's/Ht:Prost/NSAR/17899254.csv`
 
 ---
 

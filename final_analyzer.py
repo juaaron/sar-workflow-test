@@ -728,6 +728,6 @@ if __name__ == "__main__":
         csv_path = sys.argv[1]
     else:
         # Test with the legitimate business case
-        csv_path = '/Users/gkirk/Desktop/kitt Training CSV\'s/Ht:Prost/NSAR/17899254.csv'
+        csv_path = '/Users/gkirk/Desktop/sar-workflow-test Training CSV\'s/Ht:Prost/NSAR/17899254.csv'
     
     results = analyze_case_final(csv_path)

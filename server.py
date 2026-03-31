@@ -705,7 +705,7 @@ from openai import OpenAI
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'your-api-key-here')
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-SYSTEM_PROMPT = """You are kitt's AI assistant, built into the kitt (Knowledge-based Investigation & Typology Tool) platform at Block/Cash App. You help compliance analysts investigate suspicious activity in Cash App transaction data.
+SYSTEM_PROMPT = """You are SAR Workflow Test's AI assistant, built into the SAR Workflow Test platform at Block/Cash App. You help compliance analysts investigate suspicious activity in Cash App transaction data.
 
 You have deep knowledge of:
 - BSA/AML regulations and SAR filing requirements
@@ -738,10 +738,10 @@ You have FULL ACCESS to the current case's transaction data, including:
 
 When an analyst asks about specific transactions, counterparties, patterns, or data — you CAN answer because you have the raw data. Search through the transaction log provided in your context. Be specific with dates, amounts, and counterparty tokens.
 
-You can also analyze patterns that kitt's automated detectors may not cover, such as:
+You can also analyze patterns that SAR Workflow Test's automated detectors may not cover, such as:
 - Unusual timing patterns (late night activity, weekend spikes)
 - Specific counterparty relationships and transaction histories
-- Novel typologies not yet built into kitt's detection engine
+- Novel typologies not yet built into SAR Workflow Test's detection engine
 - Cross-referencing comments across different counterparties
 - Identifying potential structuring or layering patterns
 
@@ -1397,7 +1397,7 @@ def lab_similar_cases():
         rag_available = False
         try:
             import chromadb
-            client = chromadb.PersistentClient(path='./kitt_rag_db')
+            client = chromadb.PersistentClient(path='./sar_workflow_test_rag_db')
             collection = client.get_or_create_collection('sar_narratives')
             rag_available = collection.count() > 0
         except:
@@ -1466,7 +1466,7 @@ def chat_goose(user_message):
     from copilot_goose import run_goose_query
     
     try:
-        # Build rich context from kitt's analysis
+        # Build rich context from SAR Workflow Test's analysis
         context = ''
         if last_analysis_formatted:
             a = last_analysis_formatted.get('analysis_summary', {})
@@ -1502,7 +1502,7 @@ def chat_goose(user_message):
         if last_csv_path and os.path.exists(last_csv_path):
             csv_instruction = (
                 f"TO ANSWER DATA QUESTIONS, run this Python script:\n"
-                f"cd /Users/gkirk/Desktop/kitt && python3 << 'EOF'\n"
+                f"cd /Users/gkirk/Desktop/sar-workflow-test && python3 << 'EOF'\n"
                 f"from copilot_csv_helper import load_case\n"
                 f"data = load_case('{last_csv_path}')\n"
                 f"print(data['top_senders'][['total_amount','txn_count','subjects']].head(5))\n"
@@ -1554,7 +1554,7 @@ def chat_openai(user_message):
             context = f"\n\n{'='*60}\nCURRENT CASE DATA (Case {last_case_id or 'Unknown'})\n{'='*60}\n\n"
             
             # Detection results
-            context += f"KITT DETECTION RESULTS:\n"
+            context += f"SAR WORKFLOW TEST DETECTION RESULTS:\n"
             context += f"  Result: {a.get('final_recommendation', 'None')}\n"
             context += f"  Typologies: {', '.join(t['name'] + ' (' + str(t['confidence']) + '%)' for t in typs) if typs else 'None'}\n\n"
             

@@ -1,5 +1,5 @@
 """
-kitt Copilot Tools — Functions the LLM can call to query transaction data.
+SAR Workflow Test Copilot Tools — Functions the LLM can call to query transaction data.
 
 These give the copilot real data analysis capabilities instead of
 just reading a text summary.

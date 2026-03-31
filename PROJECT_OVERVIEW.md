@@ -1,4 +1,4 @@
-# KITT Project - Complete Overview
+# SAR Workflow Test Project - Complete Overview
 
 **AI Investigation Tool by Block, Inc.**
 
@@ -36,9 +36,9 @@
 
 ---
 
-## 🎯 What KITT Does
+## 🎯 What SAR Workflow Test Does
 
-**KITT analyzes transaction CSVs and automatically:**
+**SAR Workflow Test analyzes transaction CSVs and automatically:**
 1. Detects suspicious activity patterns
 2. Identifies typology (Drug Sales, Money Laundering, Gambling, etc.)
 3. Provides confidence scores
@@ -54,14 +54,14 @@
 
 ### For CCO Demo (Web Interface)
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 ./START_DEMO.sh
 ```
 Open browser: http://localhost:8888
 
 ### For Daily Analysis (Command Line)
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 python3 analyze.py /path/to/case.csv
 ```
 
@@ -155,5 +155,5 @@ Send them: `SAR-Narrative-Generator-Standalone.html`
 
 ---
 
-**KITT - Knowledge-based Investigation & Typology Tool**  
+**SAR Workflow Test**  
 *Making financial crime investigation faster, smarter, and more accurate.*

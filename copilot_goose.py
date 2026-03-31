@@ -1,5 +1,5 @@
 """
-kitt Copilot — Goose Backend
+SAR Workflow Test Copilot — Goose Backend
 
 Routes copilot chat through Goose instead of OpenAI,
 giving the copilot full Goose capabilities:
@@ -8,8 +8,8 @@ giving the copilot full Goose capabilities:
 - Execute shell commands
 - Analyze data on the fly
 
-RESTRICTION: Copilot cannot edit kitt source code files.
-Only the administrator (via direct Goose session) can modify kitt.
+RESTRICTION: Copilot cannot edit SAR Workflow Test source code files.
+Only the administrator (via direct Goose session) can modify SAR Workflow Test.
 """
 
 import subprocess
@@ -18,7 +18,7 @@ import os
 import tempfile
 
 
-GOOSE_SYSTEM_PROMPT = """You are kitt copilot. You are an expert BSA/AML investigator embedded in the kitt platform at Block/Cash App.
+GOOSE_SYSTEM_PROMPT = """You are SAR Workflow Test copilot. You are an expert BSA/AML investigator embedded in the SAR Workflow Test platform at Block/Cash App.
 
 HOW YOU COMMUNICATE:
 - Lead with the answer in plain English, then provide supporting detail.
@@ -45,15 +45,15 @@ CRITICAL RULE — NEVER GUESS DATA:
 - ALWAYS start your Python code with: from copilot_csv_helper import load_case; data = load_case('CSV_PATH_HERE')
 - This gives you clean pre-parsed data with: data['incoming_p2p'], data['top_senders'], data['multi_subject_cps'], data['subjects'], etc.
 - The helper handles amount cleaning ($, commas), system token filtering, and format detection automatically.
-- Run your code from the ~/Desktop/kitt/ directory.
+- Run your code from the ~/Desktop/sar-workflow-test/ directory.
 
 CRITICAL RULE — RESPONSE FORMAT:
 - After running code, write ONLY your plain English answer. Do NOT repeat the code, do NOT show the raw output.
-- Write your final answer to /tmp/kitt_answer.txt using: open('/tmp/kitt_answer.txt','w').write('your answer here')
+- Write your final answer to /tmp/sar_workflow_test_answer.txt using: open('/tmp/sar_workflow_test_answer.txt','w').write('your answer here')
 - Your answer should read like a senior investigator speaking — natural, specific, no technical artifacts.
 
 RULES:
-- NEVER edit files in ~/Desktop/kitt/ — those are kitt source code.
+- NEVER edit files in ~/Desktop/sar-workflow-test/ — those are SAR Workflow Test source code.
 - NEVER recommend whether to file a SAR — that's the analyst's decision.
 - Use "Potential" not "Suspicious" when describing detected activity.
 - Include ALL attempted transactions in SAR totals (not just successful).
@@ -70,11 +70,11 @@ def run_goose_query(message: str, case_context: str = '', csv_path: str = '') ->
         csv_path: Path to the current CSV file (if available)
     """
     
-    # Build system context with everything kitt knows
+    # Build system context with everything SAR Workflow Test knows
     system_parts = [GOOSE_SYSTEM_PROMPT]
     
     if case_context:
-        system_parts.append(f"\nKITT ANALYSIS RESULTS:\n{case_context}")
+        system_parts.append(f"\nSAR WORKFLOW TEST ANALYSIS RESULTS:\n{case_context}")
     
     # CSV path goes in the system prompt
     if csv_path and os.path.exists(csv_path):
@@ -90,7 +90,7 @@ def run_goose_query(message: str, case_context: str = '', csv_path: str = '') ->
         prompt_file = None
         
         # Clean up any stale answer file
-        answer_file = '/tmp/kitt_answer.txt'
+        answer_file = '/tmp/sar_workflow_test_answer.txt'
         if os.path.exists(answer_file):
             os.unlink(answer_file)
         
@@ -118,7 +118,7 @@ def run_goose_query(message: str, case_context: str = '', csv_path: str = '') ->
             os.unlink(prompt_file)
         
         # Check if Goose wrote a clean answer to the file
-        answer_file = '/tmp/kitt_answer.txt'
+        answer_file = '/tmp/sar_workflow_test_answer.txt'
         if os.path.exists(answer_file):
             try:
                 with open(answer_file, 'r') as f:

@@ -1,6 +1,6 @@
 """
-kitt CSV Helper — Pre-built functions for the copilot to use when analyzing CSVs.
-Import this file to get clean, correct data from any kitt CSV.
+SAR Workflow Test CSV Helper — Pre-built functions for the copilot to use when analyzing CSVs.
+Import this file to get clean, correct data from any SAR Workflow Test CSV.
 
 Usage:
     from copilot_csv_helper import load_case
@@ -21,7 +21,7 @@ from collections import defaultdict
 
 
 def load_case(csv_path):
-    """Load and parse a kitt CSV file. Returns a dict with clean, queryable data."""
+    """Load and parse a SAR Workflow Test CSV file. Returns a dict with clean, queryable data."""
     
     df = pd.read_csv(csv_path, encoding='utf-8-sig')
     

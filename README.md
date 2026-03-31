@@ -1,4 +1,4 @@
-# KITT - AI Investigation Tool
+# SAR Workflow Test - AI Investigation Tool
 **By Block, Inc. (XYZ)**
 
 Advanced AI-powered platform for detecting suspicious activity patterns and automating SAR narrative generation.
@@ -17,7 +17,7 @@ Advanced AI-powered platform for detecting suspicious activity patterns and auto
 ## 📁 Project Structure
 
 ```
-kitt/
+sar-workflow-test/
 ├── README.md                           # This file
 ├── CCO_BRIEF.md                        # Executive summary for CCO
 ├── CCO_DEMO_DOCUMENT.md               # Detailed demo documentation
@@ -52,7 +52,7 @@ kitt/
 ### Start the Demo
 
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 ./START_DEMO.sh
 ```
 
@@ -61,7 +61,7 @@ Then open browser to: **http://localhost:8888**
 ### Command-Line Analysis
 
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 python3 analyze.py /path/to/your/file.csv
 ```
 
@@ -121,7 +121,7 @@ python3 analyze.py /path/to/your/file.csv
 
 ### Time Savings
 - Manual: 90-180 min/case
-- With KITT: 15-25 min/case
+- With SAR Workflow Test: 15-25 min/case
 - **Reduction: 75-85%**
 
 ### Cost Savings
@@ -138,7 +138,7 @@ python3 analyze.py /path/to/your/file.csv
 
 ## 🧪 Test Cases
 
-Located in: `/Users/gkirk/Desktop/kitt Training CSV's/`
+Located in: `/Users/gkirk/Desktop/sar-workflow-test Training CSV's/`
 
 ### Validated Cases
 1. ✅ **B456100271.csv** - Drug Sales (90% confidence)
@@ -153,7 +153,7 @@ Located in: `/Users/gkirk/Desktop/kitt Training CSV's/`
 
 ### Install Dependencies
 ```bash
-cd ~/Desktop/kitt
+cd ~/Desktop/sar-workflow-test
 pip3 install -r requirements.txt
 ```
 
@@ -323,7 +323,7 @@ Includes all features plus:
 
 ---
 
-## 🏆 What Makes KITT Different
+## 🏆 What Makes SAR Workflow Test Different
 
 ### vs. Manual Analysis
 - **80% faster** - Seconds vs hours
