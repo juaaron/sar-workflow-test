@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAR Workflow Test — Connected Users Query Builder</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #141414;
+            --bg-input: #1a1a1a;
+            --bg-hover: #1e1e1e;
+            --border: #2a2a2a;
+            --border-focus: #0066ff;
+            --text-primary: #e8e8e8;
+            --text-secondary: #999;
+            --text-muted: #666;
+            --accent: #0066ff;
+            --accent-hover: #0052cc;
+            --success: #00c853;
+            --warning: #ff9800;
+            --error: #ff3d3d;
+            --mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .header-logo span { color: var(--accent); }
+        .header-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 14px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body { padding: 20px; }
+
+        /* ── FORM ELEMENTS ── */
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        label .hint {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        textarea, input[type="date"] {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 13px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: border-color 0.15s;
+            outline: none;
+        }
+        textarea {
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+        textarea:focus, input[type="date"]:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+        }
+
+        /* ── BUTTONS ── */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 22px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { color: var(--text-secondary); border-color: var(--text-muted); }
+
+        .status-msg {
+            font-size: 11px;
+            margin-left: 8px;
+            transition: opacity 0.3s;
+        }
+
+        /* ── DATE ROW ── */
+        .date-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .date-row > div { flex: 1; }
+
+        /* ── SQL PREVIEW ── */
+        .sql-preview {
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            line-height: 1.6;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #21262d;
+            position: relative;
+        }
+        .sql-preview .keyword { color: #ff7b72; }
+        .sql-preview .string { color: #a5d6ff; }
+        .sql-preview .comment { color: #484f58; font-style: italic; }
+        .sql-preview .function { color: #d2a8ff; }
+
+        /* ── INFO GRID ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 700px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .date-row { flex-direction: column; }
+        }
+        .info-item {
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .info-item-title {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        .info-item-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        code {
+            font-family: var(--mono);
+            font-size: 10px;
+            background: var(--bg-hover);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--accent);
+        }
+
+        /* ── ALERT ── */
+        .alert {
+            display: flex;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 11px;
+            line-height: 1.6;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .alert-icon { font-size: 16px; flex-shrink: 0; }
+        .alert-title { font-weight: 700; display: block; margin-bottom: 2px; }
+
+        /* ── RESULTS TABLE ── */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .results-table th {
+            background: var(--bg-input);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+        }
+        .results-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .results-table tr:hover td {
+            background: var(--bg-hover);
+        }
+        .results-wrap {
+            max-height: 400px;
+            overflow: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* ── TOKEN CHIPS ── */
+        .token-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .token-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .token-chip .remove {
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1;
+            margin-left: 2px;
+        }
+        .token-chip .remove:hover { color: var(--error); }
+        .token-count {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.25s ease; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading { animation: pulse 1.5s infinite; }
+    </style>
+</head>
+<body>
+
+    <!-- ══ HEADER ══ -->
+    <div class="header">
+        <div class="header-left">
+            <div>
+                <div class="header-logo">🔗 <span>SAR Workflow Test</span></div>
+                <div class="header-sub">Connected Users Query Builder</div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <span class="header-badge">v1.0</span>
+            <span style="font-size:11px;color:var(--text-muted);">Block, Inc.</span>
+        </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+
+        <!-- INTRO ALERT -->
+        <div class="alert" style="margin-bottom:24px;">
+            <span class="alert-icon">ℹ️</span>
+            <div>
+                <span class="alert-title">How It Works</span>
+                Enter customer tokens and a date range below. The tool generates the full Connected Users SQL query — copy it and paste into your Snowflake worksheet to execute. No login or server required.
+            </div>
+        </div>
+
+        <!-- ══ QUERY PARAMETERS ══ -->
+        <div class="card">
+            <div class="card-header">Query Parameters</div>
+            <div class="card-body">
+
+                <!-- Tokens -->
+                <div style="margin-bottom:20px;">
+                    <label>Customer Tokens <span class="hint">(one per line, comma-separated, or space-separated)</span></label>
+                    <textarea id="tokensInput" rows="4" placeholder="C_8mc9xgyqy&#10;C_abc123def&#10;C_xyz789ghi"></textarea>
+                    <div id="tokenChips" class="token-chips"></div>
+                    <div id="tokenCount" class="token-count"></div>
+                </div>
+
+                <!-- Dates -->
+                <div class="date-row">
+                    <div>
+                        <label>Start Date</label>
+                        <input type="date" id="startDate" />
+                    </div>
+                    <div>
+                        <label>End Date</label>
+                        <input type="date" id="endDate" />
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="buildQuery()">🔍 Build Query</button>
+                    <button class="btn btn-secondary" onclick="copyQuery()">📋 Copy to Clipboard</button>
+                    <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+                    <span id="statusMsg" class="status-msg"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ GENERATED SQL ══ -->
+        <div class="card">
+            <div class="card-header">
+                <span>Generated SQL</span>
+                <span id="stmtCount" style="font-size:10px;color:var(--text-muted);"></span>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <pre class="sql-preview" id="queryPreview">Paste tokens and select dates above, then click "Build Query".</pre>
+            </div>
+        </div>
+
+        <!-- ══ WHAT THIS QUERY DOES ══ -->
+        <div class="card">
+            <div class="card-header">What This Query Does</div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-item-title">🔗 Step 1 — Token Lookup</div>
+                        <div class="info-item-desc">Resolves input tokens to <code>active_customer_id</code> via <code>app_compliance.cash.customers</code></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">👥 Step 2 — Connected Users</div>
+                        <div class="info-item-desc">Finds 1st-degree connections via SSN, bank account, payment card, email, and Cash for Teens</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">💰 Step 3 — Transfers</div>
+                        <div class="info-item-desc">Cash-in counts (successful & failed) from <code>transfers</code> and <code>cash_ins</code></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">📤 Step 4 — P2P Movements</div>
+                        <div class="info-item-desc">Sent/received counts, unique counterparties from <code>movements</code> and <code>p2p_transactions</code></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">₿ Step 5 — BTC Withdrawals</div>
+                        <div class="info-item-desc">Bitcoin withdrawal transaction counts for each connected user</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">⚠️ Step 6 — Chargebacks</div>
+                        <div class="info-item-desc">Chargeback totals from <code>chargebacks</code> table</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">📋 Step 7 — SAR Cases</div>
+                        <div class="info-item-desc">Open and closed SAR case tokens from <code>app_sar.sargent.cases</code></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-item-title">📊 Step 8 — Final Output</div>
+                        <div class="info-item-desc">Aggregated view: connection types, degrees, all activity metrics, SAR status</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ OUTPUT COLUMNS ══ -->
+        <div class="card">
+            <div class="card-header">Output Columns</div>
+            <div class="card-body" style="padding:0;">
+                <div class="results-wrap" style="max-height:none;">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>input_token</td><td style="font-family:inherit;">The token you entered as input</td></tr>
+                            <tr><td>connected_token</td><td style="font-family:inherit;">Token of the connected user</td></tr>
+                            <tr><td>connection_type</td><td style="font-family:inherit;">How they're connected (SSN, BANK_ACCOUNT, PAYMENT_CARD, EMAIL, SELF, etc.)</td></tr>
+                            <tr><td>degree</td><td style="font-family:inherit;">0 = self, 1 = first-degree connection</td></tr>
+                            <tr><td>attempted_cash_in_cnt</td><td style="font-family:inherit;">Total cash-in attempts (successful + failed)</td></tr>
+                            <tr><td>attempted_p2p_cnt</td><td style="font-family:inherit;">Total P2P attempts (sent + received, successful + failed)</td></tr>
+                            <tr><td>unique_senders_recipients</td><td style="font-family:inherit;">Count of distinct counterparties</td></tr>
+                            <tr><td>withdrawal_count</td><td style="font-family:inherit;">BTC withdrawal count</td></tr>
+                            <tr><td>total_transfer_chargeback</td><td style="font-family:inherit;">Sum of chargeback amounts ($)</td></tr>
+                            <tr><td>open_sar</td><td style="font-family:inherit;">Comma-separated open SAR case tokens</td></tr>
+                            <tr><td>closed_sar</td><td style="font-family:inherit;">Comma-separated closed SAR case tokens</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLIANCE NOTICE -->
+        <div class="alert" style="margin-top:4px;">
+            <span class="alert-icon">⚖️</span>
+            <div>
+                <span class="alert-title">Compliance Notice</span>
+                This query accesses sensitive customer data. Ensure you have proper authorization and a valid business justification before executing. All Snowflake queries are logged and auditable.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- JAVASCRIPT -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <script>
+    'use strict';
+
+    let generatedQuery = '';
+
+    // ── Parse tokens from textarea ──
+    function parseTokens(raw) {
+        return raw.split(/[\n,;\s]+/)
+            .map(t => t.trim().replace(/^['"]|['"]$/g, '').replace(/^\(|\)$/g, ''))
+            .filter(t => t.length > 0);
+    }
+
+    // ── Live token chip preview ──
+    const tokensInput = document.getElementById('tokensInput');
+    tokensInput.addEventListener('input', updateTokenChips);
+
+    function updateTokenChips() {
+        const tokens = parseTokens(tokensInput.value);
+        const chipsEl = document.getElementById('tokenChips');
+        const countEl = document.getElementById('tokenCount');
+
+        if (tokens.length === 0) {
+            chipsEl.innerHTML = '';
+            countEl.textContent = '';
+            return;
+        }
+
+        chipsEl.innerHTML = tokens.map(t =>
+            `<span class="token-chip">${t}</span>`
+        ).join('');
+        countEl.textContent = `${tokens.length} token${tokens.length !== 1 ? 's' : ''} detected`;
+    }
+
+    // ── Set default dates (last 90 days) ──
+    (function setDefaults() {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 90);
+        document.getElementById('endDate').value = end.toISOString().split('T')[0];
+        document.getElementById('startDate').value = start.toISOString().split('T')[0];
+    })();
+
+    // ── Status message helper ──
+    function setStatus(msg, type) {
+        const el = document.getElementById('statusMsg');
+        const colors = { success: 'var(--success)', error: 'var(--error)', warning: 'var(--warning)', info: 'var(--text-muted)' };
+        el.style.color = colors[type] || colors.info;
+        el.textContent = msg;
+        if (type === 'success') {
+            setTimeout(() => { el.textContent = ''; }, 4000);
+        }
+    }
+
+    // ── BUILD QUERY ──
+    function buildQuery() {
+        const rawTokens = tokensInput.value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        const tokens = parseTokens(rawTokens);
+        if (tokens.length === 0) { setStatus('⚠️ Enter at least one token', 'error'); return; }
+        if (!startDate || !endDate) { setStatus('⚠️ Both dates are required', 'error'); return; }
+        if (startDate > endDate) { setStatus('⚠️ Start date must be before end date', 'error'); return; }
+
+        const tokensList = tokens.map(t => `'${t}'`).join(', ');
+
+        generatedQuery = `USE WAREHOUSE COMPLIANCE;
+
+USE DATABASE PERSONAL_AJU; --Update to personal database
+
+USE SCHEMA PUBLIC;
+
+SET START_DATE = '${startDate}';
+SET END_DATE = '${endDate}';
+
+/************************************/
+
+-- Temporary tables will be available until the session ends
+
+CREATE OR REPLACE TEMP TABLE token_list AS
+SELECT DISTINCT 
+    fc.token
+  , fc.active_customer_id
+FROM app_compliance.cash.customers fc
+WHERE
+  fc.token IN (${tokensList})
+;
+
+--Connected Users first degree hard connections and subsequent SSN second degree connections
+
+CREATE OR REPLACE TEMP TABLE conn_users as
+SELECT
+  cu.active_customer_id
+  , connected_active_customer_id
+  , connection_type
+  , connected_user_type
+  , 1 AS connection_degree
+FROM app_compliance.cash.cash_connected_users AS cu
+JOIN token_list AS t
+  ON t.active_customer_id = cu.active_customer_id
+WHERE
+  connection_type IN ('PAYMENT_CARD','SSN','BANK_ACCOUNT','EMAIL')
+  AND connected_user_type = 'CASH_CUSTOMER'
+GROUP BY
+  1, 2, 3, 4
+UNION
+SELECT
+  t.active_customer_id
+  , c.active_customer_id AS connected_active_customer_id
+  , 'CASH_FOR_TEENS_SPONSOR' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 1 AS connection_degree
+FROM token_list AS t
+JOIN app_compliance.cash.cash_global_cash_for_teens_sponsors AS cfts
+  ON t.token = cfts.dependent_customer_token
+LEFT JOIN app_compliance.cash.customers AS c
+  ON cfts.sponsor_customer_token = c.token
+UNION
+SELECT
+  t.active_customer_id
+  , c.active_customer_id AS connected_active_customer_id
+  , 'CASH_FOR_TEENS_SPONSORED' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 1 AS connection_degree
+FROM token_list AS t
+JOIN app_compliance.cash.cash_global_cash_for_teens_sponsors AS cfts
+  ON t.token = cfts.sponsor_customer_token
+LEFT JOIN app_compliance.cash.customers AS c
+  ON cfts.dependent_customer_token = c.token
+UNION
+SELECT
+  active_customer_id
+  , active_customer_id AS connected_active_customer_id
+  , 'SELF' AS connection_type
+  , 'CASH_CUSTOMER' AS connected_user_type
+  , 0 AS connection_degree
+FROM token_list
+;
+
+--Transfers
+
+CREATE OR REPLACE TEMP TABLE cin_cout AS
+WITH transfers_base AS (
+SELECT
+  cu.connected_active_customer_id
+  , t.type
+  , t.state
+  , t.token
+  , t.amount_cents
+FROM app_compliance.cash.transfers t
+JOIN conn_users AS cu
+  ON cu.connected_active_customer_id = t.customer_id
+WHERE
+  to_date(t.created_at) BETWEEN $START_DATE AND $END_DATE
+  AND type = 'CASH_IN'
+UNION ALL
+SELECT
+  cu.connected_active_customer_id
+  , 'CASH_IN' AS type
+  , state
+  , transfer_token AS token
+  , amount_cents
+FROM app_compliance.cash.cash_ins t
+JOIN conn_users AS cu
+  ON cu.connected_active_customer_id = t.active_customer_id
+WHERE
+  to_date(t.initiated_at) BETWEEN $START_DATE AND $END_DATE
+),
+
+transfers_dedup AS (
+SELECT
+  connected_active_customer_id
+  , type
+  , state
+  , token
+  , amount_cents
+FROM transfers_base
+QUALIFY 
+  ROW_NUMBER() OVER (PARTITION BY token ORDER BY token) = 1
+),
+
+transfers_agg AS (
+SELECT
+    connected_active_customer_id
+  , type
+  , state
+  , COUNT(DISTINCT token) AS cash_in_out_count
+  , SUM(amount_cents / 100) AS cash_in_out_total
+FROM transfers_dedup AS t
+GROUP BY 
+  1, 2, 3
+)
+
+SELECT
+  connected_active_customer_id
+, SUM(CASE
+        WHEN type = 'CASH_IN' AND state in ('COMPLETE', 'COMPLETED') THEN cash_in_out_count
+        ELSE NULL
+      END) AS successful_cash_in_count
+, SUM(CASE 
+        WHEN type = 'CASH_IN' AND state = 'FAILED' THEN cash_in_out_count
+        ELSE NULL
+      END) AS failed_cash_in_count 
+FROM transfers_agg
+GROUP BY 1
+ORDER BY 1
+;
+
+--Movements
+CREATE OR REPLACE TEMP TABLE cash_payments AS
+WITH p2p_base AS (
+SELECT
+  cu.connected_active_customer_id
+  , m.role
+  , m.payment_state
+  , m.payment_id::STRING AS payment_token 
+  , m.movement_amount_cents AS amount_cents
+  , c.token  AS counterparty_token
+FROM app_compliance.cash.movements m
+JOIN conn_users cu
+  ON cu.connected_active_customer_id = m.customer_id
+JOIN app_compliance.cash.customers c
+  ON m.original_counterparty_id = c.id
+WHERE
+ TO_DATE(m.created_at) BETWEEN $START_DATE AND $END_DATE
+UNION ALL
+SELECT
+  cu.connected_active_customer_id
+  , t.role
+  , t.payment_state
+  , t.payment_id::STRING AS payment_token 
+  , t.amount_cents 
+  , t.counterparty_token
+FROM app_compliance.cash.p2p_transactions t
+JOIN app_compliance.cash.customers c
+  ON c.token = t.customer_token
+JOIN conn_users cu
+  ON cu.connected_active_customer_id = c.id 
+WHERE
+ TO_DATE(t.created_at) BETWEEN $START_DATE AND $END_DATE
+),
+
+p2p_dedup AS (
+SELECT 
+  connected_active_customer_id
+  , role
+  , payment_state
+  , payment_token 
+  , amount_cents
+  , counterparty_token
+FROM p2p_base p
+QUALIFY 
+  ROW_NUMBER() OVER (PARTITION BY payment_token, role ORDER BY payment_token) = 1
+),
+
+distinct_counterparty_tokens AS (
+SELECT
+  connected_active_customer_id
+  , COUNT(DISTINCT counterparty_token) AS unique_senders_recipients
+FROM p2p_dedup
+GROUP BY 1
+),
+
+p2p_agg AS (
+SELECT
+  p2p.connected_active_customer_id
+  , p2p.role
+  , p2p.payment_state
+  , dct.unique_senders_recipients
+  , COUNT(DISTINCT p2p.payment_token) AS movement_count
+  , SUM(p2p.amount_cents/100) AS total_amount_movement
+FROM p2p_dedup p2p
+LEFT JOIN distinct_counterparty_tokens dct
+  ON p2p.connected_active_customer_id = dct.connected_active_customer_id
+GROUP BY 1,2,3,4
+)
+
+SELECT 
+  connected_active_customer_id
+, SUM(CASE 
+        WHEN role = 'SENDER' AND payment_state NOT IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count
+        ELSE NULL
+      END) AS successful_sent_count
+, SUM(CASE 
+        WHEN role IN ('RECIPIENT', 'RECIEVER') AND payment_state NOT IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count
+        ELSE NULL
+      END) AS successful_received_count
+, SUM(CASE 
+        WHEN role = 'SENDER' AND payment_state IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count
+        ELSE NULL
+      END) AS failed_sent_count
+, SUM(CASE 
+        WHEN role IN ('RECIPIENT', 'RECIEVER') AND payment_state IN ('FAILED', 'PAYMENT_STATE_CODE_FAILED') THEN movement_count
+        ELSE NULL
+      END) AS failed_received_count
+, MAX(unique_senders_recipients) AS unique_senders_recipients
+FROM p2p_agg
+GROUP BY 1
+;
+
+--BTC Withdrawals
+
+CREATE OR REPLACE TEMP TABLE btc_wd AS
+SELECT DISTINCT
+    cu.connected_active_customer_id
+  , COUNT(DISTINCT t.token) AS withdrawal_count
+FROM app_compliance.cash.transactions t
+JOIN app_compliance.cash.instrument_links i 
+  ON t.instrument_token = i.instrument_token
+  AND t.currency = 'BTC'
+  AND t.reason_code = 'BITCOIN_TRANSFER'
+JOIN app_compliance.cash.customers c
+  ON i.customer_id = c.id
+JOIN conn_users cu 
+  ON c.active_customer_id = cu.connected_active_customer_id
+WHERE
+  TO_DATE(t.created_at) BETWEEN $START_DATE AND $END_DATE
+GROUP BY 1
+;
+
+--Chargebacks
+
+CREATE OR REPLACE TEMP TABLE transfers_cb AS
+SELECT DISTINCT
+    cu.connected_active_customer_id
+  , SUM(cb.payment_amount_cents / 100) AS total_transfer_chargeback
+FROM app_compliance.cash.chargebacks AS cb
+JOIN conn_users AS cu
+  ON cb.sender_id = cu.connected_active_customer_id
+WHERE
+  TO_DATE(cb.chargeback_date) BETWEEN $START_DATE AND $END_DATE
+GROUP BY 1
+;
+
+--Open sar cases 
+
+CREATE OR REPLACE TEMP TABLE sar AS
+SELECT
+    cu.connected_active_customer_id
+  , LISTAGG(DISTINCT CASE WHEN sc.latest_case_status <> 'closed' THEN sc.case_token ELSE NULL END, ',') AS open_sar
+  , LISTAGG(DISTINCT CASE WHEN sc.latest_case_status = 'closed' THEN sc.case_token ELSE NULL END, ',') AS closed_sar
+FROM app_sar.sargent.cases AS sc
+JOIN app_sar.sargent.cases_users AS scu 
+  ON sc.case_token = scu.case_token
+JOIN app_compliance.cash.customers AS c
+  ON c.token = scu.user_token
+JOIN conn_users AS cu
+  ON c.active_customer_id = cu.connected_active_customer_id
+GROUP BY 1
+;
+
+--Aggregate table
+
+CREATE OR REPLACE TEMP TABLE final AS
+SELECT
+    c.token AS input_token
+  , c2.token AS connected_token
+  , cu.connected_user_type AS type
+  , cu.connection_type
+  , cu.connection_degree AS degree
+  , ci.successful_cash_in_count
+  , ci.failed_cash_in_count
+  , cp.successful_sent_count 
+  , cp.successful_received_count 
+  , cp.failed_sent_count 
+  , cp.failed_received_count 
+  , cp.unique_senders_recipients
+  , bt.withdrawal_count
+  , t.total_transfer_chargeback
+  , s.open_sar
+  , s.closed_sar
+FROM conn_users AS cu
+JOIN app_compliance.cash.customers AS c
+  ON cu.active_customer_id = c.id
+JOIN app_compliance.cash.customers AS c2
+  ON cu.connected_active_customer_id = c2.id
+LEFT JOIN cin_cout AS ci
+  ON cu.connected_active_customer_id = ci.connected_active_customer_id
+LEFT JOIN cash_payments AS cp 
+  ON cu.connected_active_customer_id = cp.connected_active_customer_id
+LEFT JOIN btc_wd AS bt 
+  ON bt.connected_active_customer_id = cu.connected_active_customer_id
+LEFT JOIN transfers_cb AS t 
+  ON t.connected_active_customer_id = cu.connected_active_customer_id
+LEFT JOIN sar AS s
+  ON s.connected_active_customer_id = cu.connected_active_customer_id
+;
+
+--Final output 
+
+SELECT base.*
+FROM
+(
+SELECT
+    input_token
+  , connected_token
+  , LISTAGG(DISTINCT connection_type, ',') AS connection_type
+  , MIN(degree) AS degree
+  , COALESCE(successful_cash_in_count, 0) + COALESCE(failed_cash_in_count, 0) AS attempted_cash_in_cnt
+  , COALESCE(successful_sent_count, 0) + COALESCE(Successful_received_count, 0) + COALESCE(Failed_sent_count, 0) + COALESCE(Failed_received_count, 0) AS attempted_p2p_cnt
+  , COALESCE(unique_senders_recipients, 0) AS unique_senders_recipients
+  , COALESCE(withdrawal_count, 0) AS withdrawal_count
+  , COALESCE(total_transfer_chargeback, 0) AS total_transfer_chargeback
+  , open_sar
+  , closed_sar
+FROM final 
+GROUP BY
+  1, 2, 5, 6, 7, 8, 9, 10, 11
+) AS base
+WHERE degree <= 1
+ORDER BY
+  1 ASC, 4 ASC, 2 ASC
+;`;
+
+        // Show in preview with syntax highlighting
+        document.getElementById('queryPreview').innerHTML = highlightSQL(generatedQuery);
+        document.getElementById('stmtCount').textContent = `${generatedQuery.split(';').filter(s => s.trim()).length} SQL statements · ${tokens.length} token${tokens.length !== 1 ? 's' : ''}`;
+        setStatus(`✅ Query built — ${tokens.length} token${tokens.length !== 1 ? 's' : ''}, ${startDate} to ${endDate}`, 'success');
+    }
+
+    // ── COPY TO CLIPBOARD ──
+    function copyQuery() {
+        if (!generatedQuery) {
+            setStatus('⚠️ Build a query first', 'error');
+            return;
+        }
+        navigator.clipboard.writeText(generatedQuery).then(() => {
+            setStatus('✅ Copied to clipboard — paste into Snowflake', 'success');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = generatedQuery;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            setStatus('✅ Copied to clipboard', 'success');
+        });
+    }
+
+    // ── CLEAR ──
+    function clearForm() {
+        tokensInput.value = '';
+        document.getElementById('tokenChips').innerHTML = '';
+        document.getElementById('tokenCount').textContent = '';
+        document.getElementById('queryPreview').innerHTML = 'Paste tokens and select dates above, then click "Build Query".';
+        document.getElementById('stmtCount').textContent = '';
+        document.getElementById('statusMsg').textContent = '';
+        generatedQuery = '';
+
+        // Reset dates to defaults
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 90);
+        document.getElementById('endDate').value = end.toISOString().split('T')[0];
+        document.getElementById('startDate').value = start.toISOString().split('T')[0];
+    }
+
+    // ── SQL SYNTAX HIGHLIGHTING ──
+    function highlightSQL(sql) {
+        // Escape HTML
+        let s = sql.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        // Comments (-- and /* */)
+        s = s.replace(/(--.*)/g, '<span class="comment">$1</span>');
+        s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="comment">$1</span>');
+
+        // Strings
+        s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>');
+
+        // Keywords
+        const keywords = [
+            'USE', 'WAREHOUSE', 'DATABASE', 'SCHEMA', 'SET', 'SELECT', 'FROM', 'WHERE',
+            'JOIN', 'LEFT', 'ON', 'AND', 'OR', 'IN', 'AS', 'CREATE', 'REPLACE', 'TEMP',
+            'TABLE', 'WITH', 'UNION', 'ALL', 'GROUP', 'BY', 'ORDER', 'ASC', 'DESC',
+            'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'DISTINCT', 'NOT', 'NULL', 'BETWEEN',
+            'OVER', 'PARTITION', 'QUALIFY', 'HAVING', 'LIMIT', 'COALESCE', 'SUM', 'COUNT',
+            'MIN', 'MAX', 'AVG', 'ROW_NUMBER', 'LISTAGG', 'TO_DATE', 'OR'
+        ];
+        const kwRegex = new RegExp('\\b(' + keywords.join('|') + ')\\b', 'g');
+        // Only highlight if not inside a span already
+        s = s.replace(kwRegex, (match) => {
+            return '<span class="keyword">' + match + '</span>';
+        });
+
+        return s;
+    }
+
+    </script>
+</body>
+</html>
