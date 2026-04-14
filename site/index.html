@@ -20,6 +20,8 @@
             --success: #00c853;
             --warning: #ff9800;
             --error: #ff3d3d;
+            --selected-bg: rgba(0, 102, 255, 0.08);
+            --selected-border: rgba(0, 102, 255, 0.3);
             --mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
         }
 
@@ -46,292 +48,248 @@
             z-index: 100;
             backdrop-filter: blur(12px);
         }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .header-logo {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
         .header-logo span { color: var(--accent); }
         .header-badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            background: var(--accent);
-            color: #fff;
-            border-radius: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 10px; padding: 2px 8px; background: var(--accent);
+            color: #fff; border-radius: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .header-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .header-sub { font-size: 12px; color: var(--text-muted); }
 
-        /* ── MAIN LAYOUT ── */
-        .main {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 32px 24px;
-        }
-
-        /* ── CARDS ── */
-        .card {
+        /* ── TAB NAV ── */
+        .tab-nav {
+            display: flex;
             background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .card-header {
-            padding: 14px 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
             border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 0 32px;
+            gap: 0;
         }
-        .card-body { padding: 20px; }
-
-        /* ── FORM ELEMENTS ── */
-        label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        label .hint {
-            font-weight: 400;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-
-        textarea, input[type="date"] {
-            width: 100%;
-            padding: 10px 14px;
-            font-size: 13px;
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            transition: border-color 0.15s;
-            outline: none;
-        }
-        textarea {
-            font-family: var(--mono);
-            font-size: 12px;
-            line-height: 1.7;
-            resize: vertical;
-        }
-        textarea:focus, input[type="date"]:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(0.7);
-        }
-
-        /* ── BUTTONS ── */
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .btn {
-            padding: 10px 22px;
+        .tab-btn {
+            padding: 12px 24px;
             font-size: 12px;
             font-weight: 600;
+            color: var(--text-muted);
+            background: none;
             border: none;
-            border-radius: 8px;
+            border-bottom: 2px solid transparent;
             cursor: pointer;
             transition: all 0.15s;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 6px;
         }
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
+        .tab-btn:hover { color: var(--text-secondary); }
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary {
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+        .tab-btn .badge {
+            font-size: 9px; padding: 1px 6px; border-radius: 8px;
+            background: var(--accent); color: #fff; font-weight: 700;
         }
-        .btn-secondary:hover { background: var(--bg-hover); border-color: var(--text-muted); }
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-        .btn-ghost:hover { color: var(--text-secondary); border-color: var(--text-muted); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
 
-        .status-msg {
-            font-size: 11px;
-            margin-left: 8px;
-            transition: opacity 0.3s;
+        /* ── MAIN ── */
+        .main { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; margin-bottom: 20px; overflow: hidden;
         }
+        .card-header {
+            padding: 14px 20px; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-secondary); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .card-body { padding: 20px; }
+
+        /* ── FORM ── */
+        label {
+            display: block; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        label .hint { font-weight: 400; text-transform: none; letter-spacing: 0; }
+        textarea, input[type="date"], input[type="text"], input[type="file"] {
+            width: 100%; padding: 10px 14px; font-size: 13px;
+            background: var(--bg-input); color: var(--text-primary);
+            border: 1px solid var(--border); border-radius: 8px;
+            transition: border-color 0.15s; outline: none;
+        }
+        textarea { font-family: var(--mono); font-size: 12px; line-height: 1.7; resize: vertical; }
+        textarea:focus, input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+
+        /* ── BUTTONS ── */
+        .btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 22px; font-size: 12px; font-weight: 600;
+            border: none; border-radius: 8px; cursor: pointer;
+            transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { color: var(--text-secondary); border-color: var(--text-muted); }
+        .btn-success { background: var(--success); color: #000; font-weight: 700; }
+        .btn-success:hover { background: #00b348; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .status-msg { font-size: 11px; margin-left: 8px; }
 
         /* ── DATE ROW ── */
-        .date-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+        .date-row { display: flex; gap: 16px; margin-bottom: 20px; }
         .date-row > div { flex: 1; }
 
         /* ── SQL PREVIEW ── */
         .sql-preview {
-            background: #0d1117;
-            color: #c9d1d9;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: var(--mono);
-            font-size: 11.5px;
-            line-height: 1.6;
-            overflow-x: auto;
-            max-height: 500px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            border: 1px solid #21262d;
-            position: relative;
+            background: #0d1117; color: #c9d1d9; padding: 20px; border-radius: 8px;
+            font-family: var(--mono); font-size: 11.5px; line-height: 1.6;
+            overflow-x: auto; max-height: 500px; overflow-y: auto;
+            white-space: pre-wrap; word-wrap: break-word; border: 1px solid #21262d;
         }
         .sql-preview .keyword { color: #ff7b72; }
         .sql-preview .string { color: #a5d6ff; }
         .sql-preview .comment { color: #484f58; font-style: italic; }
-        .sql-preview .function { color: #d2a8ff; }
 
         /* ── INFO GRID ── */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        @media (max-width: 700px) {
-            .info-grid { grid-template-columns: 1fr; }
-            .date-row { flex-direction: column; }
-        }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .info-item {
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            padding: 12px 16px; background: var(--bg-input);
+            border-radius: 8px; border: 1px solid var(--border);
         }
-        .info-item-title {
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--text-secondary);
-        }
-        .info-item-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
+        .info-item-title { font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text-secondary); }
+        .info-item-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
         code {
-            font-family: var(--mono);
-            font-size: 10px;
-            background: var(--bg-hover);
-            padding: 1px 5px;
-            border-radius: 3px;
-            color: var(--accent);
+            font-family: var(--mono); font-size: 10px; background: var(--bg-hover);
+            padding: 1px 5px; border-radius: 3px; color: var(--accent);
         }
 
         /* ── ALERT ── */
         .alert {
-            display: flex;
-            gap: 12px;
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 11px;
-            line-height: 1.6;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
+            display: flex; gap: 12px; padding: 14px 18px; border-radius: 8px;
+            font-size: 11px; line-height: 1.6; border: 1px solid var(--border); background: var(--bg-card);
         }
         .alert-icon { font-size: 16px; flex-shrink: 0; }
         .alert-title { font-weight: 700; display: block; margin-bottom: 2px; }
 
-        /* ── RESULTS TABLE ── */
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-        .results-table th {
-            background: var(--bg-input);
-            padding: 8px 12px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-        }
-        .results-table td {
-            padding: 7px 12px;
-            border-bottom: 1px solid var(--border);
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-        .results-table tr:hover td {
-            background: var(--bg-hover);
-        }
-        .results-wrap {
-            max-height: 400px;
-            overflow: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
         /* ── TOKEN CHIPS ── */
-        .token-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
+        .token-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .token-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-secondary);
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 20px; font-family: var(--mono); font-size: 11px; color: var(--text-secondary);
         }
-        .token-chip .remove {
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1;
-            margin-left: 2px;
+        .token-count { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+
+        /* ── RESULTS TABLE ── */
+        .results-wrap {
+            overflow: auto; border-radius: 8px; border: 1px solid var(--border);
+            max-height: 600px;
         }
-        .token-chip .remove:hover { color: var(--error); }
-        .token-count {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 6px;
+        .results-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .results-table th {
+            background: var(--bg-input); padding: 8px 12px; text-align: left;
+            font-weight: 700; font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.5px; color: var(--text-muted);
+            border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 2;
+        }
+        .results-table th.sortable { cursor: pointer; user-select: none; }
+        .results-table th.sortable:hover { color: var(--text-secondary); }
+        .results-table th .sort-arrow { font-size: 9px; margin-left: 3px; opacity: 0.4; }
+        .results-table th.sort-active .sort-arrow { opacity: 1; color: var(--accent); }
+        .results-table td {
+            padding: 7px 12px; border-bottom: 1px solid var(--border);
+            font-family: var(--mono); font-size: 11px; color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .results-table tr:hover td { background: var(--bg-hover); }
+        .results-table tr.selected td {
+            background: var(--selected-bg) !important;
+            border-bottom-color: var(--selected-border);
+        }
+        .results-table td.wrap-cell { white-space: normal; max-width: 200px; word-break: break-all; }
+
+        /* ── CHECKBOX ── */
+        .row-checkbox {
+            width: 16px; height: 16px; accent-color: var(--accent);
+            cursor: pointer; vertical-align: middle;
+        }
+        .select-all-checkbox { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+
+        /* ── SELECTION BAR ── */
+        .selection-bar {
+            display: none; position: sticky; bottom: 0; left: 0; right: 0;
+            background: var(--bg-card); border-top: 2px solid var(--accent);
+            padding: 14px 24px; z-index: 50;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        }
+        .selection-bar.visible { display: flex; }
+        .selection-bar-left { display: flex; align-items: center; gap: 12px; }
+        .selection-count {
+            font-size: 13px; font-weight: 700; color: var(--accent);
+        }
+        .selection-label { font-size: 11px; color: var(--text-muted); }
+
+        /* ── DRAG & DROP ── */
+        .drop-zone {
+            border: 2px dashed var(--border); border-radius: 12px;
+            padding: 40px 20px; text-align: center; cursor: pointer;
+            transition: all 0.2s; background: var(--bg-input);
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent); background: rgba(0, 102, 255, 0.05);
+        }
+        .drop-zone-icon { font-size: 36px; margin-bottom: 12px; }
+        .drop-zone-text { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+        .drop-zone-hint { font-size: 11px; color: var(--text-muted); }
+
+        /* ── STATS ROW ── */
+        .stats-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .stat-box {
+            flex: 1; min-width: 120px; padding: 12px 16px;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
+        }
+        .stat-value { font-size: 20px; font-weight: 700; color: var(--text-primary); font-family: var(--mono); }
+        .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .filter-input {
+            padding: 7px 12px; font-size: 12px; background: var(--bg-input);
+            color: var(--text-primary); border: 1px solid var(--border);
+            border-radius: 6px; outline: none; min-width: 200px;
+        }
+        .filter-input:focus { border-color: var(--border-focus); }
+        .filter-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 20px; font-size: 10px; color: var(--text-secondary); cursor: pointer;
+        }
+        .filter-tag:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-tag.active { background: rgba(0,102,255,0.15); border-color: var(--accent); color: var(--accent); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .date-row { flex-direction: column; }
+            .stats-row { flex-direction: column; }
+            .header { padding: 12px 16px; }
+            .main { padding: 16px 12px; }
+            .tab-nav { padding: 0 12px; overflow-x: auto; }
+            .tab-btn { padding: 10px 16px; font-size: 11px; white-space: nowrap; }
         }
 
         /* ── SCROLLBAR ── */
@@ -340,12 +298,7 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* ── ANIMATIONS ── */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.25s ease; }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .loading { animation: pulse 1.5s infinite; }
     </style>
 </head>
 <body>
@@ -359,221 +312,792 @@
             </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
-            <span class="header-badge">v1.0</span>
+            <span class="header-badge">v2.0</span>
             <span style="font-size:11px;color:var(--text-muted);">Block, Inc.</span>
         </div>
     </div>
 
-    <!-- ══ MAIN ══ -->
-    <div class="main">
-
-        <!-- INTRO ALERT -->
-        <div class="alert" style="margin-bottom:24px;">
-            <span class="alert-icon">ℹ️</span>
-            <div>
-                <span class="alert-title">How It Works</span>
-                Enter customer tokens and a date range below. The tool generates the full Connected Users SQL query — copy it and paste into your Snowflake worksheet to execute. No login or server required.
-            </div>
-        </div>
-
-        <!-- ══ QUERY PARAMETERS ══ -->
-        <div class="card">
-            <div class="card-header">Query Parameters</div>
-            <div class="card-body">
-
-                <!-- Tokens -->
-                <div style="margin-bottom:20px;">
-                    <label>Customer Tokens <span class="hint">(one per line, comma-separated, or space-separated)</span></label>
-                    <textarea id="tokensInput" rows="4" placeholder="C_8mc9xgyqy&#10;C_abc123def&#10;C_xyz789ghi"></textarea>
-                    <div id="tokenChips" class="token-chips"></div>
-                    <div id="tokenCount" class="token-count"></div>
-                </div>
-
-                <!-- Dates -->
-                <div class="date-row">
-                    <div>
-                        <label>Start Date</label>
-                        <input type="date" id="startDate" />
-                    </div>
-                    <div>
-                        <label>End Date</label>
-                        <input type="date" id="endDate" />
-                    </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="btn-row">
-                    <button class="btn btn-primary" onclick="buildQuery()">🔍 Build Query</button>
-                    <button class="btn btn-secondary" onclick="copyQuery()">📋 Copy to Clipboard</button>
-                    <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
-                    <span id="statusMsg" class="status-msg"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ GENERATED SQL ══ -->
-        <div class="card">
-            <div class="card-header">
-                <span>Generated SQL</span>
-                <span id="stmtCount" style="font-size:10px;color:var(--text-muted);"></span>
-            </div>
-            <div class="card-body" style="padding:0;">
-                <pre class="sql-preview" id="queryPreview">Paste tokens and select dates above, then click "Build Query".</pre>
-            </div>
-        </div>
-
-        <!-- ══ WHAT THIS QUERY DOES ══ -->
-        <div class="card">
-            <div class="card-header">What This Query Does</div>
-            <div class="card-body">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-item-title">🔗 Step 1 — Token Lookup</div>
-                        <div class="info-item-desc">Resolves input tokens to <code>active_customer_id</code> via <code>app_compliance.cash.customers</code></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">👥 Step 2 — Connected Users</div>
-                        <div class="info-item-desc">Finds 1st-degree connections via SSN, bank account, payment card, email, and Cash for Teens</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">💰 Step 3 — Transfers</div>
-                        <div class="info-item-desc">Cash-in counts (successful & failed) from <code>transfers</code> and <code>cash_ins</code></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">📤 Step 4 — P2P Movements</div>
-                        <div class="info-item-desc">Sent/received counts, unique counterparties from <code>movements</code> and <code>p2p_transactions</code></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">₿ Step 5 — BTC Withdrawals</div>
-                        <div class="info-item-desc">Bitcoin withdrawal transaction counts for each connected user</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">⚠️ Step 6 — Chargebacks</div>
-                        <div class="info-item-desc">Chargeback totals from <code>chargebacks</code> table</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">📋 Step 7 — SAR Cases</div>
-                        <div class="info-item-desc">Open and closed SAR case tokens from <code>app_sar.sargent.cases</code></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-title">📊 Step 8 — Final Output</div>
-                        <div class="info-item-desc">Aggregated view: connection types, degrees, all activity metrics, SAR status</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ OUTPUT COLUMNS ══ -->
-        <div class="card">
-            <div class="card-header">Output Columns</div>
-            <div class="card-body" style="padding:0;">
-                <div class="results-wrap" style="max-height:none;">
-                    <table class="results-table">
-                        <thead>
-                            <tr>
-                                <th>Column</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>input_token</td><td style="font-family:inherit;">The token you entered as input</td></tr>
-                            <tr><td>connected_token</td><td style="font-family:inherit;">Token of the connected user</td></tr>
-                            <tr><td>connection_type</td><td style="font-family:inherit;">How they're connected (SSN, BANK_ACCOUNT, PAYMENT_CARD, EMAIL, SELF, etc.)</td></tr>
-                            <tr><td>degree</td><td style="font-family:inherit;">0 = self, 1 = first-degree connection</td></tr>
-                            <tr><td>attempted_cash_in_cnt</td><td style="font-family:inherit;">Total cash-in attempts (successful + failed)</td></tr>
-                            <tr><td>attempted_p2p_cnt</td><td style="font-family:inherit;">Total P2P attempts (sent + received, successful + failed)</td></tr>
-                            <tr><td>unique_senders_recipients</td><td style="font-family:inherit;">Count of distinct counterparties</td></tr>
-                            <tr><td>withdrawal_count</td><td style="font-family:inherit;">BTC withdrawal count</td></tr>
-                            <tr><td>total_transfer_chargeback</td><td style="font-family:inherit;">Sum of chargeback amounts ($)</td></tr>
-                            <tr><td>open_sar</td><td style="font-family:inherit;">Comma-separated open SAR case tokens</td></tr>
-                            <tr><td>closed_sar</td><td style="font-family:inherit;">Comma-separated closed SAR case tokens</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- COMPLIANCE NOTICE -->
-        <div class="alert" style="margin-top:4px;">
-            <span class="alert-icon">⚖️</span>
-            <div>
-                <span class="alert-title">Compliance Notice</span>
-                This query accesses sensitive customer data. Ensure you have proper authorization and a valid business justification before executing. All Snowflake queries are logged and auditable.
-            </div>
-        </div>
-
+    <!-- ══ TAB NAVIGATION ══ -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('build', this)">🔍 Build Query</button>
+        <button class="tab-btn" onclick="switchTab('results', this)">
+            📊 View Results
+            <span class="badge" id="resultsTabBadge" style="display:none;">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('reference', this)">📖 Reference</button>
     </div>
 
-    <!-- ══════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TAB 1: BUILD QUERY -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-build">
+        <div class="main">
+
+            <div class="alert" style="margin-bottom:24px;">
+                <span class="alert-icon">ℹ️</span>
+                <div>
+                    <span class="alert-title">How It Works</span>
+                    <strong>Step 1:</strong> Enter tokens & date range → Build query → Copy to clipboard<br>
+                    <strong>Step 2:</strong> Paste into Snowflake → Run → Download results as CSV<br>
+                    <strong>Step 3:</strong> Upload the CSV to the <strong>View Results</strong> tab → Browse, filter, and select transactions of interest → Export selection
+                </div>
+            </div>
+
+            <!-- QUERY PARAMETERS -->
+            <div class="card">
+                <div class="card-header">Query Parameters</div>
+                <div class="card-body">
+                    <div style="margin-bottom:20px;">
+                        <label>Customer Tokens <span class="hint">(one per line, comma-separated, or space-separated)</span></label>
+                        <textarea id="tokensInput" rows="4" placeholder="C_8mc9xgyqy&#10;C_abc123def&#10;C_xyz789ghi"></textarea>
+                        <div id="tokenChips" class="token-chips"></div>
+                        <div id="tokenCount" class="token-count"></div>
+                    </div>
+                    <div class="date-row">
+                        <div>
+                            <label>Start Date</label>
+                            <input type="date" id="startDate" />
+                        </div>
+                        <div>
+                            <label>End Date</label>
+                            <input type="date" id="endDate" />
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="buildQuery()">🔍 Build Query</button>
+                        <button class="btn btn-secondary" onclick="copyQuery()">📋 Copy to Clipboard</button>
+                        <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+                        <span id="statusMsg" class="status-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GENERATED SQL -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Generated SQL</span>
+                    <span id="stmtCount" style="font-size:10px;color:var(--text-muted);"></span>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <pre class="sql-preview" id="queryPreview">Paste tokens and select dates above, then click "Build Query".</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TAB 2: VIEW RESULTS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-results">
+        <div class="main">
+
+            <!-- UPLOAD SECTION -->
+            <div id="uploadSection">
+                <div class="alert" style="margin-bottom:24px;">
+                    <span class="alert-icon">📊</span>
+                    <div>
+                        <span class="alert-title">Upload Your Snowflake Results</span>
+                        Run the generated query in Snowflake, download the results as CSV, then upload or paste them here. You can then browse, sort, filter, and select the transactions of interest.
+                    </div>
+                </div>
+
+                <!-- Drop Zone -->
+                <div class="card">
+                    <div class="card-header">Import Data</div>
+                    <div class="card-body">
+                        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                            <div class="drop-zone-icon">📁</div>
+                            <div class="drop-zone-text">Drop CSV file here or click to browse</div>
+                            <div class="drop-zone-hint">Supports .csv files from Snowflake query results</div>
+                        </div>
+                        <input type="file" id="fileInput" accept=".csv,.tsv,.txt" style="display:none;" onchange="handleFileUpload(event)" />
+
+                        <div style="text-align:center;padding:16px 0;font-size:11px;color:var(--text-muted);">— or paste CSV data directly —</div>
+
+                        <textarea id="csvPasteInput" rows="6" placeholder="Paste CSV data here (with headers)...&#10;&#10;input_token,connected_token,connection_type,degree,attempted_cash_in_cnt,..."></textarea>
+                        <div style="margin-top:12px;">
+                            <button class="btn btn-primary" onclick="loadPastedCSV()">📥 Load Pasted Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA VIEWER (hidden until data loaded) -->
+            <div id="dataViewer" style="display:none;">
+
+                <!-- Stats -->
+                <div class="stats-row" id="statsRow">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTotalRows">0</div>
+                        <div class="stat-label">Total Rows</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statColumns">0</div>
+                        <div class="stat-label">Columns</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statSelected">0</div>
+                        <div class="stat-label">Selected</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statInputTokens">0</div>
+                        <div class="stat-label">Input Tokens</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statConnections">0</div>
+                        <div class="stat-label">Connections</div>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>Data Table</span>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <span id="filterInfo" style="font-size:10px;color:var(--text-muted);"></span>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding:12px 20px;">
+                        <!-- Filter Bar -->
+                        <div class="filter-bar">
+                            <input type="text" class="filter-input" id="searchInput" placeholder="🔍  Search across all columns..." oninput="applyFilters()" />
+                            <div id="quickFilters" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="btn-row" style="margin-bottom:12px;">
+                            <button class="btn btn-success" onclick="exportSelected()" id="exportSelectedBtn" disabled>
+                                📥 Export Selected (0)
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportAll()">📥 Export All</button>
+                            <button class="btn btn-ghost" onclick="clearSelection()">✖ Clear Selection</button>
+                            <button class="btn btn-ghost" onclick="resetDataViewer()">🔄 Load New File</button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="results-wrap" id="tableWrap">
+                        <table class="results-table" id="dataTable">
+                            <thead id="dataTableHead"></thead>
+                            <tbody id="dataTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TAB 3: REFERENCE -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-reference">
+        <div class="main">
+            <div class="card">
+                <div class="card-header">What This Query Does</div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-item-title">🔗 Step 1 — Token Lookup</div>
+                            <div class="info-item-desc">Resolves input tokens to <code>active_customer_id</code> via <code>app_compliance.cash.customers</code></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">👥 Step 2 — Connected Users</div>
+                            <div class="info-item-desc">Finds 1st-degree connections via SSN, bank account, payment card, email, and Cash for Teens</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">💰 Step 3 — Transfers</div>
+                            <div class="info-item-desc">Cash-in counts (successful & failed) from <code>transfers</code> and <code>cash_ins</code></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">📤 Step 4 — P2P Movements</div>
+                            <div class="info-item-desc">Sent/received counts, unique counterparties from <code>movements</code> and <code>p2p_transactions</code></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">₿ Step 5 — BTC Withdrawals</div>
+                            <div class="info-item-desc">Bitcoin withdrawal transaction counts for each connected user</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">⚠️ Step 6 — Chargebacks</div>
+                            <div class="info-item-desc">Chargeback totals from <code>chargebacks</code> table</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">📋 Step 7 — SAR Cases</div>
+                            <div class="info-item-desc">Open and closed SAR case tokens from <code>app_sar.sargent.cases</code></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title">📊 Step 8 — Final Output</div>
+                            <div class="info-item-desc">Aggregated view: connection types, degrees, all activity metrics, SAR status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Output Columns</div>
+                <div class="card-body" style="padding:0;">
+                    <div class="results-wrap" style="max-height:none;">
+                        <table class="results-table">
+                            <thead><tr><th>Column</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>input_token</td><td style="font-family:inherit;">The token you entered as input</td></tr>
+                                <tr><td>connected_token</td><td style="font-family:inherit;">Token of the connected user</td></tr>
+                                <tr><td>connection_type</td><td style="font-family:inherit;">How they're connected (SSN, BANK_ACCOUNT, PAYMENT_CARD, EMAIL, SELF, etc.)</td></tr>
+                                <tr><td>degree</td><td style="font-family:inherit;">0 = self, 1 = first-degree connection</td></tr>
+                                <tr><td>attempted_cash_in_cnt</td><td style="font-family:inherit;">Total cash-in attempts (successful + failed)</td></tr>
+                                <tr><td>attempted_p2p_cnt</td><td style="font-family:inherit;">Total P2P attempts (sent + received, successful + failed)</td></tr>
+                                <tr><td>unique_senders_recipients</td><td style="font-family:inherit;">Count of distinct counterparties</td></tr>
+                                <tr><td>withdrawal_count</td><td style="font-family:inherit;">BTC withdrawal count</td></tr>
+                                <tr><td>total_transfer_chargeback</td><td style="font-family:inherit;">Sum of chargeback amounts ($)</td></tr>
+                                <tr><td>open_sar</td><td style="font-family:inherit;">Comma-separated open SAR case tokens</td></tr>
+                                <tr><td>closed_sar</td><td style="font-family:inherit;">Comma-separated closed SAR case tokens</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert">
+                <span class="alert-icon">⚖️</span>
+                <div>
+                    <span class="alert-title">Compliance Notice</span>
+                    This query accesses sensitive customer data. Ensure you have proper authorization and a valid business justification before executing. All Snowflake queries are logged and auditable.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SELECTION BAR (sticky bottom) ══ -->
+    <div class="selection-bar" id="selectionBar">
+        <div class="selection-bar-left">
+            <span class="selection-count" id="selBarCount">0</span>
+            <span class="selection-label">rows selected</span>
+            <button class="btn btn-ghost" onclick="clearSelection()" style="padding:5px 12px;font-size:11px;">✖ Clear</button>
+        </div>
+        <div>
+            <button class="btn btn-success" onclick="exportSelected()" style="padding:8px 20px;">
+                📥 Export Selected as CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
     <!-- JAVASCRIPT -->
-    <!-- ══════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════ -->
     <script>
     'use strict';
 
+    // ── STATE ──
     let generatedQuery = '';
+    let csvHeaders = [];
+    let csvData = [];           // All parsed rows (array of objects)
+    let filteredIndices = [];    // Indices into csvData that pass current filter
+    let selectedRows = new Set(); // Set of row indices (into csvData) that are selected
+    let sortColumn = null;
+    let sortDirection = 'asc';
 
-    // ── Parse tokens from textarea ──
+    // ══════════════════════════════════════════
+    // TAB SWITCHING
+    // ══════════════════════════════════════════
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + name).classList.add('active');
+        if (btn) btn.classList.add('active');
+    }
+
+    // ══════════════════════════════════════════
+    // QUERY BUILDER (Tab 1)
+    // ══════════════════════════════════════════
     function parseTokens(raw) {
         return raw.split(/[\n,;\s]+/)
             .map(t => t.trim().replace(/^['"]|['"]$/g, '').replace(/^\(|\)$/g, ''))
             .filter(t => t.length > 0);
     }
 
-    // ── Live token chip preview ──
     const tokensInput = document.getElementById('tokensInput');
-    tokensInput.addEventListener('input', updateTokenChips);
-
-    function updateTokenChips() {
+    tokensInput.addEventListener('input', () => {
         const tokens = parseTokens(tokensInput.value);
         const chipsEl = document.getElementById('tokenChips');
         const countEl = document.getElementById('tokenCount');
-
-        if (tokens.length === 0) {
-            chipsEl.innerHTML = '';
-            countEl.textContent = '';
-            return;
-        }
-
-        chipsEl.innerHTML = tokens.map(t =>
-            `<span class="token-chip">${t}</span>`
-        ).join('');
+        if (tokens.length === 0) { chipsEl.innerHTML = ''; countEl.textContent = ''; return; }
+        chipsEl.innerHTML = tokens.map(t => `<span class="token-chip">${t}</span>`).join('');
         countEl.textContent = `${tokens.length} token${tokens.length !== 1 ? 's' : ''} detected`;
-    }
+    });
 
-    // ── Set default dates (last 90 days) ──
-    (function setDefaults() {
-        const end = new Date();
-        const start = new Date();
+    // Set default dates
+    (function() {
+        const end = new Date(), start = new Date();
         start.setDate(start.getDate() - 90);
         document.getElementById('endDate').value = end.toISOString().split('T')[0];
         document.getElementById('startDate').value = start.toISOString().split('T')[0];
     })();
 
-    // ── Status message helper ──
     function setStatus(msg, type) {
         const el = document.getElementById('statusMsg');
         const colors = { success: 'var(--success)', error: 'var(--error)', warning: 'var(--warning)', info: 'var(--text-muted)' };
         el.style.color = colors[type] || colors.info;
         el.textContent = msg;
-        if (type === 'success') {
-            setTimeout(() => { el.textContent = ''; }, 4000);
-        }
+        if (type === 'success') setTimeout(() => { el.textContent = ''; }, 5000);
     }
 
-    // ── BUILD QUERY ──
     function buildQuery() {
-        const rawTokens = tokensInput.value;
+        const tokens = parseTokens(tokensInput.value);
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-
-        const tokens = parseTokens(rawTokens);
         if (tokens.length === 0) { setStatus('⚠️ Enter at least one token', 'error'); return; }
         if (!startDate || !endDate) { setStatus('⚠️ Both dates are required', 'error'); return; }
         if (startDate > endDate) { setStatus('⚠️ Start date must be before end date', 'error'); return; }
 
         const tokensList = tokens.map(t => `'${t}'`).join(', ');
+        generatedQuery = buildSQL(tokensList, startDate, endDate);
+        document.getElementById('queryPreview').innerHTML = highlightSQL(generatedQuery);
+        const stmtCount = generatedQuery.split(';').filter(s => s.trim()).length;
+        document.getElementById('stmtCount').textContent = `${stmtCount} SQL statements · ${tokens.length} token${tokens.length !== 1 ? 's' : ''}`;
+        setStatus(`✅ Query built — ${tokens.length} token${tokens.length !== 1 ? 's' : ''}, ${startDate} to ${endDate}`, 'success');
+    }
 
-        generatedQuery = `USE WAREHOUSE COMPLIANCE;
+    function copyQuery() {
+        if (!generatedQuery) { setStatus('⚠️ Build a query first', 'error'); return; }
+        navigator.clipboard.writeText(generatedQuery).then(() => {
+            setStatus('✅ Copied to clipboard — paste into Snowflake', 'success');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = generatedQuery; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            setStatus('✅ Copied to clipboard', 'success');
+        });
+    }
+
+    function clearForm() {
+        tokensInput.value = '';
+        document.getElementById('tokenChips').innerHTML = '';
+        document.getElementById('tokenCount').textContent = '';
+        document.getElementById('queryPreview').innerHTML = 'Paste tokens and select dates above, then click "Build Query".';
+        document.getElementById('stmtCount').textContent = '';
+        document.getElementById('statusMsg').textContent = '';
+        generatedQuery = '';
+        const end = new Date(), start = new Date();
+        start.setDate(start.getDate() - 90);
+        document.getElementById('endDate').value = end.toISOString().split('T')[0];
+        document.getElementById('startDate').value = start.toISOString().split('T')[0];
+    }
+
+    // ══════════════════════════════════════════
+    // CSV PARSER & DATA VIEWER (Tab 2)
+    // ══════════════════════════════════════════
+
+    // ── Drag & Drop ──
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) readCSVFile(file);
+    });
+
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) readCSVFile(file);
+    }
+
+    function readCSVFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            parseAndLoadCSV(e.target.result);
+        };
+        reader.readAsText(file);
+    }
+
+    function loadPastedCSV() {
+        const text = document.getElementById('csvPasteInput').value.trim();
+        if (!text) return;
+        parseAndLoadCSV(text);
+    }
+
+    // ── CSV Parser (handles quoted fields, newlines in quotes, etc.) ──
+    function parseCSV(text) {
+        const rows = [];
+        let current = '';
+        let inQuotes = false;
+        const lines = [];
+
+        // Split into lines respecting quoted fields
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (ch === '"') {
+                if (inQuotes && text[i + 1] === '"') {
+                    current += '"'; i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+                if (ch === '\r' && text[i + 1] === '\n') i++;
+                if (current.trim()) lines.push(current);
+                current = '';
+            } else {
+                current += ch;
+            }
+        }
+        if (current.trim()) lines.push(current);
+
+        // Parse each line into fields
+        for (const line of lines) {
+            const fields = [];
+            let field = '';
+            let q = false;
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (ch === '"') {
+                    if (q && line[i + 1] === '"') { field += '"'; i++; }
+                    else q = !q;
+                } else if (ch === ',' && !q) {
+                    fields.push(field.trim());
+                    field = '';
+                } else {
+                    field += ch;
+                }
+            }
+            fields.push(field.trim());
+            rows.push(fields);
+        }
+        return rows;
+    }
+
+    function parseAndLoadCSV(text) {
+        const rows = parseCSV(text);
+        if (rows.length < 2) { alert('CSV must have a header row and at least one data row.'); return; }
+
+        csvHeaders = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
+        csvData = [];
+        selectedRows = new Set();
+        sortColumn = null;
+
+        for (let i = 1; i < rows.length; i++) {
+            const obj = {};
+            csvHeaders.forEach((h, j) => { obj[h] = rows[i][j] || ''; });
+            csvData.push(obj);
+        }
+
+        filteredIndices = csvData.map((_, i) => i);
+        showDataViewer();
+    }
+
+    function showDataViewer() {
+        document.getElementById('uploadSection').style.display = 'none';
+        document.getElementById('dataViewer').style.display = 'block';
+
+        // Update badge
+        const badge = document.getElementById('resultsTabBadge');
+        badge.style.display = 'inline'; badge.textContent = csvData.length;
+
+        updateStats();
+        buildQuickFilters();
+        renderTable();
+    }
+
+    function resetDataViewer() {
+        document.getElementById('uploadSection').style.display = 'block';
+        document.getElementById('dataViewer').style.display = 'none';
+        document.getElementById('resultsTabBadge').style.display = 'none';
+        document.getElementById('selectionBar').classList.remove('visible');
+        csvHeaders = []; csvData = []; filteredIndices = []; selectedRows.clear();
+        document.getElementById('fileInput').value = '';
+        document.getElementById('csvPasteInput').value = '';
+    }
+
+    // ── Stats ──
+    function updateStats() {
+        document.getElementById('statTotalRows').textContent = csvData.length;
+        document.getElementById('statColumns').textContent = csvHeaders.length;
+        document.getElementById('statSelected').textContent = selectedRows.size;
+
+        // Count unique input tokens and connections
+        const inputTokenCol = csvHeaders.find(h => h.toLowerCase().includes('input_token'));
+        const degreeCol = csvHeaders.find(h => h.toLowerCase().includes('degree'));
+        if (inputTokenCol) {
+            const unique = new Set(csvData.map(r => r[inputTokenCol]));
+            document.getElementById('statInputTokens').textContent = unique.size;
+        }
+        if (degreeCol) {
+            const connections = csvData.filter(r => r[degreeCol] === '1' || r[degreeCol] === 1).length;
+            document.getElementById('statConnections').textContent = connections;
+        }
+    }
+
+    // ── Quick Filters (by connection_type and degree) ──
+    function buildQuickFilters() {
+        const container = document.getElementById('quickFilters');
+        container.innerHTML = '';
+
+        // Degree filters
+        const degreeCol = csvHeaders.find(h => h.toLowerCase().includes('degree'));
+        if (degreeCol) {
+            const degrees = [...new Set(csvData.map(r => r[degreeCol]))].sort();
+            degrees.forEach(d => {
+                const tag = document.createElement('span');
+                tag.className = 'filter-tag';
+                tag.dataset.filterType = 'degree';
+                tag.dataset.filterValue = d;
+                tag.textContent = `Degree ${d}`;
+                tag.onclick = () => { tag.classList.toggle('active'); applyFilters(); };
+                container.appendChild(tag);
+            });
+        }
+
+        // Connection type filters
+        const connCol = csvHeaders.find(h => h.toLowerCase().includes('connection_type'));
+        if (connCol) {
+            const types = new Set();
+            csvData.forEach(r => {
+                (r[connCol] || '').split(',').forEach(t => { if (t.trim()) types.add(t.trim()); });
+            });
+            [...types].sort().forEach(t => {
+                const tag = document.createElement('span');
+                tag.className = 'filter-tag';
+                tag.dataset.filterType = 'connection';
+                tag.dataset.filterValue = t;
+                tag.textContent = t;
+                tag.onclick = () => { tag.classList.toggle('active'); applyFilters(); };
+                container.appendChild(tag);
+            });
+        }
+
+        // Has open SAR filter
+        const sarCol = csvHeaders.find(h => h.toLowerCase().includes('open_sar'));
+        if (sarCol) {
+            const tag = document.createElement('span');
+            tag.className = 'filter-tag';
+            tag.dataset.filterType = 'has_sar';
+            tag.textContent = '⚠️ Has Open SAR';
+            tag.onclick = () => { tag.classList.toggle('active'); applyFilters(); };
+            container.appendChild(tag);
+        }
+    }
+
+    function applyFilters() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+        const activeTags = document.querySelectorAll('.filter-tag.active');
+
+        const degreeFilters = [];
+        const connFilters = [];
+        let hasSarFilter = false;
+
+        activeTags.forEach(tag => {
+            if (tag.dataset.filterType === 'degree') degreeFilters.push(tag.dataset.filterValue);
+            if (tag.dataset.filterType === 'connection') connFilters.push(tag.dataset.filterValue);
+            if (tag.dataset.filterType === 'has_sar') hasSarFilter = true;
+        });
+
+        const degreeCol = csvHeaders.find(h => h.toLowerCase().includes('degree'));
+        const connCol = csvHeaders.find(h => h.toLowerCase().includes('connection_type'));
+        const sarCol = csvHeaders.find(h => h.toLowerCase().includes('open_sar'));
+
+        filteredIndices = [];
+
+        csvData.forEach((row, idx) => {
+            // Text search
+            if (searchText) {
+                const match = csvHeaders.some(h => String(row[h]).toLowerCase().includes(searchText));
+                if (!match) return;
+            }
+
+            // Degree filter
+            if (degreeFilters.length > 0 && degreeCol) {
+                if (!degreeFilters.includes(String(row[degreeCol]))) return;
+            }
+
+            // Connection type filter
+            if (connFilters.length > 0 && connCol) {
+                const rowTypes = (row[connCol] || '').split(',').map(t => t.trim());
+                if (!connFilters.some(f => rowTypes.includes(f))) return;
+            }
+
+            // SAR filter
+            if (hasSarFilter && sarCol) {
+                if (!row[sarCol] || row[sarCol].trim() === '' || row[sarCol] === '0') return;
+            }
+
+            filteredIndices.push(idx);
+        });
+
+        document.getElementById('filterInfo').textContent =
+            filteredIndices.length === csvData.length ? '' : `Showing ${filteredIndices.length} of ${csvData.length} rows`;
+
+        renderTable();
+    }
+
+    // ── Table Rendering ──
+    function renderTable() {
+        const thead = document.getElementById('dataTableHead');
+        const tbody = document.getElementById('dataTableBody');
+
+        // Header
+        let headerHTML = '<tr>';
+        headerHTML += '<th style="width:40px;text-align:center;"><input type="checkbox" class="select-all-checkbox" onchange="toggleSelectAll(this)" /></th>';
+        headerHTML += '<th style="width:50px;text-align:center;color:var(--text-muted);">#</th>';
+        csvHeaders.forEach((h, i) => {
+            const isActive = sortColumn === i;
+            const arrow = isActive ? (sortDirection === 'asc' ? '▲' : '▼') : '▲';
+            headerHTML += `<th class="sortable ${isActive ? 'sort-active' : ''}" onclick="sortByColumn(${i})">${h} <span class="sort-arrow">${arrow}</span></th>`;
+        });
+        headerHTML += '</tr>';
+        thead.innerHTML = headerHTML;
+
+        // Sort filtered indices if needed
+        let displayIndices = [...filteredIndices];
+        if (sortColumn !== null) {
+            const col = csvHeaders[sortColumn];
+            displayIndices.sort((a, b) => {
+                let va = csvData[a][col], vb = csvData[b][col];
+                // Try numeric sort
+                const na = parseFloat(va), nb = parseFloat(vb);
+                if (!isNaN(na) && !isNaN(nb)) {
+                    return sortDirection === 'asc' ? na - nb : nb - na;
+                }
+                va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
+                if (va < vb) return sortDirection === 'asc' ? -1 : 1;
+                if (va > vb) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        // Body
+        let bodyHTML = '';
+        displayIndices.forEach((dataIdx, displayIdx) => {
+            const row = csvData[dataIdx];
+            const isSelected = selectedRows.has(dataIdx);
+            bodyHTML += `<tr class="${isSelected ? 'selected' : ''}" data-idx="${dataIdx}">`;
+            bodyHTML += `<td style="text-align:center;"><input type="checkbox" class="row-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRow(${dataIdx}, this)" /></td>`;
+            bodyHTML += `<td style="text-align:center;color:var(--text-muted);font-size:10px;">${displayIdx + 1}</td>`;
+            csvHeaders.forEach(h => {
+                let val = row[h] || '';
+                const isSar = h.toLowerCase().includes('sar') && val && val.trim() !== '' && val !== '0';
+                const isToken = h.toLowerCase().includes('token');
+                const cellClass = isToken ? 'wrap-cell' : '';
+                const style = isSar ? 'color:var(--warning);font-weight:600;' : '';
+                bodyHTML += `<td class="${cellClass}" style="${style}">${escapeHTML(val)}</td>`;
+            });
+            bodyHTML += '</tr>';
+        });
+
+        if (displayIndices.length === 0) {
+            bodyHTML = `<tr><td colspan="${csvHeaders.length + 2}" style="text-align:center;padding:40px;color:var(--text-muted);font-family:inherit;">No rows match the current filters</td></tr>`;
+        }
+
+        tbody.innerHTML = bodyHTML;
+    }
+
+    // ── Sorting ──
+    function sortByColumn(colIdx) {
+        if (sortColumn === colIdx) {
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortColumn = colIdx;
+            sortDirection = 'asc';
+        }
+        renderTable();
+    }
+
+    // ── Row Selection ──
+    function toggleRow(idx, checkbox) {
+        if (checkbox.checked) {
+            selectedRows.add(idx);
+        } else {
+            selectedRows.delete(idx);
+        }
+        updateSelectionUI();
+        // Update row highlight without full re-render
+        const tr = document.querySelector(`tr[data-idx="${idx}"]`);
+        if (tr) tr.classList.toggle('selected', checkbox.checked);
+    }
+
+    function toggleSelectAll(checkbox) {
+        if (checkbox.checked) {
+            filteredIndices.forEach(idx => selectedRows.add(idx));
+        } else {
+            filteredIndices.forEach(idx => selectedRows.delete(idx));
+        }
+        updateSelectionUI();
+        renderTable();
+    }
+
+    function clearSelection() {
+        selectedRows.clear();
+        updateSelectionUI();
+        renderTable();
+    }
+
+    function updateSelectionUI() {
+        const count = selectedRows.size;
+        document.getElementById('statSelected').textContent = count;
+        document.getElementById('selBarCount').textContent = count;
+
+        const bar = document.getElementById('selectionBar');
+        if (count > 0) { bar.classList.add('visible'); } else { bar.classList.remove('visible'); }
+
+        const btn = document.getElementById('exportSelectedBtn');
+        btn.textContent = `📥 Export Selected (${count})`;
+        btn.disabled = count === 0;
+    }
+
+    // ── Export ──
+    function exportCSV(rows, filename) {
+        if (rows.length === 0) return;
+        let csv = csvHeaders.map(h => `"${h}"`).join(',') + '\n';
+        rows.forEach(row => {
+            csv += csvHeaders.map(h => {
+                let val = String(row[h] || '');
+                val = val.replace(/"/g, '""');
+                return `"${val}"`;
+            }).join(',') + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    function exportSelected() {
+        if (selectedRows.size === 0) return;
+        const rows = [...selectedRows].sort((a, b) => a - b).map(i => csvData[i]);
+        const date = new Date().toISOString().split('T')[0];
+        exportCSV(rows, `selected-transactions-${date}.csv`);
+        setStatus(`✅ Exported ${rows.length} selected rows`, 'success');
+    }
+
+    function exportAll() {
+        const date = new Date().toISOString().split('T')[0];
+        exportCSV(csvData, `all-results-${date}.csv`);
+    }
+
+    // ══════════════════════════════════════════
+    // UTILITIES
+    // ══════════════════════════════════════════
+
+    function escapeHTML(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function highlightSQL(sql) {
+        let s = escapeHTML(sql);
+        s = s.replace(/(--.*)/g, '<span class="comment">$1</span>');
+        s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="comment">$1</span>');
+        s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>');
+        const kw = ['USE','WAREHOUSE','DATABASE','SCHEMA','SET','SELECT','FROM','WHERE','JOIN','LEFT','ON','AND','OR','IN','AS','CREATE','REPLACE','TEMP','TABLE','WITH','UNION','ALL','GROUP','BY','ORDER','ASC','DESC','CASE','WHEN','THEN','ELSE','END','DISTINCT','NOT','NULL','BETWEEN','OVER','PARTITION','QUALIFY','HAVING','LIMIT','COALESCE','SUM','COUNT','MIN','MAX','AVG','ROW_NUMBER','LISTAGG','TO_DATE'];
+        const re = new RegExp('\\b(' + kw.join('|') + ')\\b', 'g');
+        s = s.replace(re, '<span class="keyword">$1</span>');
+        return s;
+    }
+
+    // ══════════════════════════════════════════
+    // SQL TEMPLATE
+    // ══════════════════════════════════════════
+    function buildSQL(tokensList, startDate, endDate) {
+        return `USE WAREHOUSE COMPLIANCE;
 
 USE DATABASE PERSONAL_AJU; --Update to personal database
 
@@ -920,78 +1444,6 @@ WHERE degree <= 1
 ORDER BY
   1 ASC, 4 ASC, 2 ASC
 ;`;
-
-        // Show in preview with syntax highlighting
-        document.getElementById('queryPreview').innerHTML = highlightSQL(generatedQuery);
-        document.getElementById('stmtCount').textContent = `${generatedQuery.split(';').filter(s => s.trim()).length} SQL statements · ${tokens.length} token${tokens.length !== 1 ? 's' : ''}`;
-        setStatus(`✅ Query built — ${tokens.length} token${tokens.length !== 1 ? 's' : ''}, ${startDate} to ${endDate}`, 'success');
-    }
-
-    // ── COPY TO CLIPBOARD ──
-    function copyQuery() {
-        if (!generatedQuery) {
-            setStatus('⚠️ Build a query first', 'error');
-            return;
-        }
-        navigator.clipboard.writeText(generatedQuery).then(() => {
-            setStatus('✅ Copied to clipboard — paste into Snowflake', 'success');
-        }).catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = generatedQuery;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            setStatus('✅ Copied to clipboard', 'success');
-        });
-    }
-
-    // ── CLEAR ──
-    function clearForm() {
-        tokensInput.value = '';
-        document.getElementById('tokenChips').innerHTML = '';
-        document.getElementById('tokenCount').textContent = '';
-        document.getElementById('queryPreview').innerHTML = 'Paste tokens and select dates above, then click "Build Query".';
-        document.getElementById('stmtCount').textContent = '';
-        document.getElementById('statusMsg').textContent = '';
-        generatedQuery = '';
-
-        // Reset dates to defaults
-        const end = new Date();
-        const start = new Date();
-        start.setDate(start.getDate() - 90);
-        document.getElementById('endDate').value = end.toISOString().split('T')[0];
-        document.getElementById('startDate').value = start.toISOString().split('T')[0];
-    }
-
-    // ── SQL SYNTAX HIGHLIGHTING ──
-    function highlightSQL(sql) {
-        // Escape HTML
-        let s = sql.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-        // Comments (-- and /* */)
-        s = s.replace(/(--.*)/g, '<span class="comment">$1</span>');
-        s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="comment">$1</span>');
-
-        // Strings
-        s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>');
-
-        // Keywords
-        const keywords = [
-            'USE', 'WAREHOUSE', 'DATABASE', 'SCHEMA', 'SET', 'SELECT', 'FROM', 'WHERE',
-            'JOIN', 'LEFT', 'ON', 'AND', 'OR', 'IN', 'AS', 'CREATE', 'REPLACE', 'TEMP',
-            'TABLE', 'WITH', 'UNION', 'ALL', 'GROUP', 'BY', 'ORDER', 'ASC', 'DESC',
-            'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'DISTINCT', 'NOT', 'NULL', 'BETWEEN',
-            'OVER', 'PARTITION', 'QUALIFY', 'HAVING', 'LIMIT', 'COALESCE', 'SUM', 'COUNT',
-            'MIN', 'MAX', 'AVG', 'ROW_NUMBER', 'LISTAGG', 'TO_DATE', 'OR'
-        ];
-        const kwRegex = new RegExp('\\b(' + keywords.join('|') + ')\\b', 'g');
-        // Only highlight if not inside a span already
-        s = s.replace(kwRegex, (match) => {
-            return '<span class="keyword">' + match + '</span>';
-        });
-
-        return s;
     }
 
     </script>
